@@ -17,6 +17,7 @@ import type {
   RegisterSuccessResponse,
 } from "@/types/models/user";
 import { cookieManager } from "@/lib/cookies";
+import { env } from "@/constants/env";
 
 type AuthContextType = {
   session: {
@@ -121,16 +122,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setLoginResponse(null);
 
     try {
-      const res = await fetch(
-        "https://qstv5nanld.execute-api.me-central-1.amazonaws.com/dev/api/users/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(input),
-        }
-      );
+      const res = await fetch(`${env.backendUrl}/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(input),
+      });
 
       const data = await res.json();
 
@@ -180,16 +178,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     try {
-      const res = await fetch(
-        "https://qstv5nanld.execute-api.me-central-1.amazonaws.com/dev/api/users/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(`${env.backendUrl}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       // Handle 201 Created success response and others
       if (res.status === 201) {

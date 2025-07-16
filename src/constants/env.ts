@@ -1,4 +1,9 @@
-export const env = {
-  backendUrl:
-    "https://qstv5nanld.execute-api.me-central-1.amazonaws.com/dev/api",
-} as const;
+type Env = {
+  port: number;
+  backendUrl: string;
+};
+
+export const env: Env = {
+  port: parseInt(process.env.PORT || "3000"),
+  backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL || "",
+};
