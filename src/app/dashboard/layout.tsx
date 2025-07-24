@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Home,
-  Users,
-  Settings,
-  FileText,
-  BarChart3,
-  Bell,
-  User,
-  LogOut,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -28,48 +19,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { RouteGuard } from "@/components/auth/route-guard";
 import { useAuth } from "@/providers/auth-provider";
-
-// Menu items
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Users",
-    url: "/dashboard/users",
-    icon: Users,
-  },
-  {
-    title: "Reports",
-    url: "/dashboard/reports",
-    icon: BarChart3,
-  },
-  {
-    title: "Documents",
-    url: "/dashboard/documents",
-    icon: FileText,
-  },
-  {
-    title: "Notifications",
-    url: "/dashboard/notifications",
-    icon: Bell,
-  },
-];
-
-const settingsItems = [
-  {
-    title: "Profile",
-    url: "/dashboard/profile",
-    icon: User,
-  },
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
-];
+import { MAIN_NAVIGATION } from "@/constants/navigation";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/query-client";
 
 function AppSidebar() {
   const { session, logout } = useAuth();
@@ -95,31 +47,11 @@ function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {MAIN_NAVIGATION.map((item) => (
+                <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Settings */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a href={item.href}>
+                      <span>{item.label}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -166,19 +98,21 @@ export default function DashboardLayout({
   return (
     <RouteGuard redirectTo="/login">
       <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1 flex flex-col">
-            {/* Header */}
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger />
-              <div className="flex-1" />
-            </header>
+        <QueryClientProvider client={queryClient}>
+          <div className="flex min-h-screen w-full">
+            <AppSidebar />
+            <main className="flex-1 flex flex-col">
+              {/* Header */}
+              <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger />
+                <div className="flex-1" />
+              </header>
 
-            {/* Main content */}
-            <div className="flex-1 p-4">{children}</div>
-          </main>
-        </div>
+              {/* Main content */}
+              <div className="flex-1 p-4">{children}</div>
+            </main>
+          </div>
+        </QueryClientProvider>
       </SidebarProvider>
     </RouteGuard>
   );

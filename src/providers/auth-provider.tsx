@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import type { TApiError } from "@/types/api";
+import type { TApiError } from "@/types/common/api";
 import type {
   TUser,
   LoginInput,
