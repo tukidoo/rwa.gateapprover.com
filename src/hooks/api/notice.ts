@@ -40,6 +40,10 @@ const getNoticeById = (id: number): Promise<TApiSuccess<TNotice>> => {
   return api.get(`/notices/${id}`);
 };
 
+const addNotice = (data: Partial<TNotice>): Promise<TApiSuccess<TNotice>> => {
+  return api.post("/notices", data);
+};
+
 const updateNotice = (
   id: number,
   data: Partial<TNotice>
@@ -62,6 +66,13 @@ export const useGetNoticeById = (id: number, options?: TQueryOpts<TNotice>) => {
   return useQuery({
     queryKey: ["useGetNoticeById", id],
     queryFn: () => getNoticeById(id),
+    ...options,
+  });
+};
+
+export const useAddNotice = (options?: TMutationOpts<Partial<TNotice>, TNotice>) => {
+  return useMutation({
+    mutationFn: (data: Partial<TNotice>) => addNotice(data),
     ...options,
   });
 };

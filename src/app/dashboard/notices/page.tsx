@@ -17,10 +17,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2, MoreHorizontal, Pin, Trash2 } from "lucide-react";
+import { Loader2, MoreHorizontal, Pin, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
+import Link from "next/link";
 
 export default function NoticesPage() {
   const router = useRouter();
@@ -44,7 +45,13 @@ export default function NoticesPage() {
   if (error) return <div>Error loading notices</div>;
 
   return (
-    <div className="overflow-x-auto">
+    <div className="flex flex-col gap-4">
+      <Button asChild className="w-fit ml-auto">
+        <Link href="/dashboard/notices/new">
+          <Plus className="h-4 w-4" />
+          Create Notice
+        </Link>
+      </Button>
       <Table>
         <TableHeader>
           <TableRow>

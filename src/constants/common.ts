@@ -12,3 +12,22 @@ export const PRIORITY = [
   { value: "medium", label: "Medium" },
   { value: "low", label: "Low" },
 ];
+
+export const CATEGORY = [
+  {
+    value: "1",
+    label: "General",
+  },
+  {
+    value: "2",
+    label: "Announcement",
+  },
+  {
+    value: "3",
+    label: "Event",
+  },
+  {
+    value: "4",
+    label: "Maintenance",
+  },
+];
