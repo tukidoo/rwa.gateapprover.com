@@ -29,6 +29,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const addNoticeSchema = z.object({
   title: z.string().min(1),
@@ -52,11 +53,12 @@ const addNoticeSchema = z.object({
 const NewNoticePage = () => {
   const [targetUnits, setTargetUnits] = useState<string[]>([""]);
   const [targetFloors, setTargetFloors] = useState<string[]>([""]);
-
+  const router = useRouter();
   const { mutate: addNotice, isPending } = useAddNotice({
     onSuccess: (data) => {
       toast.success(data.message);
       invalidateQuery({ queryKey: ["useGetAllNotices"] });
+      router.push(`/dashboard/notices`);
     },
     onError: (error) => {
       toast.error(error.message);
