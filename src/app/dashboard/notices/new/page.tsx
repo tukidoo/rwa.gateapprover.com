@@ -39,10 +39,8 @@ const addNoticeSchema = z.object({
   target_audience: z.enum(TARGET_AUDIENCE.map((item) => item.value)),
   target_units: z.array(z.number()),
   target_floors: z.array(z.number()),
-  effective_dates: z.object({
-    from: z.date(),
-    to: z.date().optional(),
-  }),
+  effective_from: z.date(),
+  effective_until: z.date().optional(),
   is_pinned: z.boolean(),
   send_push_notification: z.boolean(),
   send_email: z.boolean(),
@@ -75,10 +73,6 @@ const NewNoticePage = () => {
       target_audience: TARGET_AUDIENCE[0].value,
       target_units: [],
       target_floors: [],
-      effective_dates: {
-        from: new Date(),
-        to: undefined,
-      },
       is_pinned: false,
       send_push_notification: false,
       send_email: false,
@@ -127,10 +121,8 @@ const NewNoticePage = () => {
       target_floors: targetFloors
         .filter((floor) => floor.trim() !== "")
         .map(Number),
-      effective_from: data.effective_dates.from.toISOString(),
-      effective_until:
-        data.effective_dates.to?.toISOString() ||
-        data.effective_dates.from.toISOString(),
+      effective_from: data.effective_from.toISOString(),
+      effective_until: data.effective_until?.toISOString(),
       attachments: data.attachments?.map((attachment) => ({
         url: attachment,
         filename: attachment,
@@ -345,25 +337,44 @@ const NewNoticePage = () => {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="effective_dates"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Effective Period</FormLabel>
-                <FormControl>
-                  <Calendar
-                    mode="range"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    className="rounded-md border"
-                    numberOfMonths={2}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex gap-4">
+            <FormField
+              control={form.control}
+              name="effective_from"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Effective From</FormLabel>
+                  <FormControl>
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      className="rounded-md border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="effective_until"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Effective Until</FormLabel>
+                  <FormControl>
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      className="rounded-md border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <div className="flex gap-4">
             <FormField
               control={form.control}
