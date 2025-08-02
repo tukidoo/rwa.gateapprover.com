@@ -121,6 +121,7 @@ export const useAddNotice = (
   options?: TMutationOpts<Partial<TNotice>, TNotice>
 ) => {
   return useMutation({
+    mutationKey: ["useAddNotice"],
     mutationFn: (data: Partial<TNotice>) => addNotice(data),
     ...options,
   });
@@ -131,6 +132,7 @@ export const useUpdateNotice = (
   options?: TMutationOpts<Partial<TNotice>, TNotice>
 ) => {
   return useMutation({
+    mutationKey: ["useUpdateNotice"],
     mutationFn: (data: Partial<TNotice>) => updateNotice(id, data),
     ...options,
   });
