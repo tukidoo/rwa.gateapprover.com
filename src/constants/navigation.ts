@@ -19,6 +19,10 @@ export const MAIN_NAVIGATION = [
     label: "Visitor Management",
     href: "/dashboard/visitor-management",
   },
+  {
+    label: "Document Verification",
+    href: "/dashboard/document-verification",
+  },
 ];
 
 export const SECONDARY_NAVIGATION = [

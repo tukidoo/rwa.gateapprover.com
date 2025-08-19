@@ -23,15 +23,3 @@ type TDeliveryVisitorsResponse = TApiResponse<{
   expires_at: string;
   notifications_sent: boolean;
 }>;
-
-const createDeliveryVisitorRequest = async (
-  payload: TDeliveryVisitorsPayload
-) => {
-  await api.post<TDeliveryVisitorsResponse>("/delivery-visitors", payload);
-};
-
-export const useCreateDeliveryVisitorRequest = () => {
-  return useMutation({
-    mutationFn: createDeliveryVisitorRequest,
-  });
-};
