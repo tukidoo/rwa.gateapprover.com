@@ -41,8 +41,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RELATIONSHIP_TYPE } from "@/constants/common";
-import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const formSchema = z.object({
@@ -65,10 +63,6 @@ const TenantOnboardingDetailsPage = () => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      start_date: new Date(),
-      end_date: new Date(),
-    },
   });
 
   const {
