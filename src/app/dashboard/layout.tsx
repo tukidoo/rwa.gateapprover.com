@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   Sidebar,
@@ -22,10 +22,12 @@ import { useAuth } from "@/providers/auth-provider";
 import { MAIN_NAVIGATION } from "@/constants/navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query-client";
+import { cn } from "@/lib/utils";
 
 function AppSidebar() {
   const { session, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await logout();
@@ -50,7 +52,13 @@ function AppSidebar() {
               {MAIN_NAVIGATION.map((item) => (
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton asChild>
-                    <a href={item.href}>
+                    <a
+                      href={item.href}
+                      className={cn(
+                        !pathname.startsWith(item.href) &&
+                          "text-muted-foreground"
+                      )}
+                    >
                       <span>{item.label}</span>
                     </a>
                   </SidebarMenuButton>

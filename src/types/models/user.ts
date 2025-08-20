@@ -9,6 +9,7 @@ export type TUser = {
   phone_verified: number;
   unit_id: number | null;
   building_id: number | null;
+  profile_image_url: string | null;
 };
 
 export type LoginInput = {

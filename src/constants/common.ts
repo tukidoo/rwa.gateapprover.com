@@ -31,3 +31,8 @@ export const CATEGORY = [
     label: "Maintenance",
   },
 ];
+
+export const RELATIONSHIP_TYPE = [
+  { value: "tenant", label: "Tenant" },
+  { value: "owner", label: "Owner" },
+];

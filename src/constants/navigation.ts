@@ -1,9 +1,5 @@
 export const MAIN_NAVIGATION = [
   {
-    label: "Dashboard",
-    href: "/dashboard",
-  },
-  {
     label: "Notices",
     href: "/dashboard/notices",
   },
@@ -22,6 +18,10 @@ export const MAIN_NAVIGATION = [
   {
     label: "Document Verification",
     href: "/dashboard/document-verification",
+  },
+  {
+    label: "Tenant Onboarding",
+    href: "/dashboard/tenant-onboarding",
   },
 ];
 
