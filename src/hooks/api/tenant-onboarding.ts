@@ -21,6 +21,14 @@ export type TGetSubmittedDocumentsResponseData = {
   >[];
 };
 
+export type TPostFinishOnboardingPayload = {
+  user_id: number;
+  unit_id: number;
+  relationship_type: string;
+  start_date: string;
+  end_date: string;
+};
+
 export type TGetTenantOnboardingQueryParams = Partial<TPagination>;
 
 const getAllTenantOnboarding = (
@@ -33,6 +41,12 @@ const getSubmittedDocumentsById = (
   id: number
 ): Promise<TApiSuccess<TGetSubmittedDocumentsResponseData>> => {
   return api.get(`/rwa/getsubmitteddocuments/${id}`);
+};
+
+const postFinishOnboarding = (
+  payload: TPostFinishOnboardingPayload
+): Promise<TApiSuccess<undefined>> => {
+  return api.post(`/rwa/finishonboarding`, payload);
 };
 
 export const useGetAllTenantOnboarding = (
@@ -53,6 +67,16 @@ export const useGetSubmittedDocumentsById = (
   return useQuery({
     queryKey: ["useGetSubmittedDocumentsById", id],
     queryFn: () => getSubmittedDocumentsById(id),
+    ...options,
+  });
+};
+
+export const usePostFinishOnboarding = (
+  options?: TMutationOpts<TPostFinishOnboardingPayload, undefined>
+) => {
+  return useMutation({
+    mutationFn: (payload: TPostFinishOnboardingPayload) =>
+      postFinishOnboarding(payload),
     ...options,
   });
 };

@@ -1,6 +1,9 @@
 "use client";
 
-import { useGetSubmittedDocumentsById } from "@/hooks/api/tenant-onboarding";
+import {
+  useGetSubmittedDocumentsById,
+  usePostFinishOnboarding,
+} from "@/hooks/api/tenant-onboarding";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +19,6 @@ import {
 } from "@/components/ui/sheet";
 import {
   FileText,
-  Download,
   CheckCircle,
   XCircle,
   Clock,
@@ -24,7 +26,7 @@ import {
   Eye,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useOpenClose } from "@/hooks/custom/use-open-close";
 import { Separator } from "@/components/ui/separator";
@@ -42,6 +44,8 @@ import {
 } from "@/components/ui/form";
 import { RELATIONSHIP_TYPE } from "@/constants/common";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { toast } from "sonner";
+import { invalidateQuery } from "@/lib/query-client";
 
 const formSchema = z.object({
   relationship_type: z.enum(RELATIONSHIP_TYPE.map((type) => type.value)),
@@ -51,7 +55,9 @@ const formSchema = z.object({
 
 const TenantOnboardingDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const { isOpen, open, close } = useOpenClose();
+
   const [selectedDocument, setSelectedDocument] = useState<{
     document_id: number;
     document_type: string;
@@ -73,6 +79,11 @@ const TenantOnboardingDetailsPage = () => {
   } = useGetSubmittedDocumentsById(Number(id), {
     enabled: !!id,
   });
+
+  const {
+    mutate: postFinishOnboarding,
+    isPending: isPostFinishOnboardingPending,
+  } = usePostFinishOnboarding();
 
   const submittedDocuments = getSubmittedDocumentsById?.data;
 
@@ -153,11 +164,29 @@ const TenantOnboardingDetailsPage = () => {
   };
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log({
-      ...data,
-      user_id: Number(id),
-      unit_id: submittedDocuments?.user.unit_id,
-    });
+    if (submittedDocuments?.user.unit_id) {
+      postFinishOnboarding(
+        {
+          user_id: Number(id),
+          unit_id: submittedDocuments?.user.unit_id,
+          relationship_type: data.relationship_type,
+          start_date: data.start_date.toISOString().split("T")[0],
+          end_date: data.end_date.toISOString().split("T")[0],
+        },
+        {
+          onSuccess: (data) => {
+            toast.success(data.message);
+            invalidateQuery({
+              queryKey: ["useGetAllTenantOnboarding"],
+            });
+            router.push("/dashboard/tenant-onboarding");
+          },
+          onError: (error) => {
+            toast.error(error.message);
+          },
+        }
+      );
+    }
   };
 
   if (isLoading) {
@@ -386,8 +415,13 @@ const TenantOnboardingDetailsPage = () => {
                 )}
               />
             </div>
-            <Button className="w-max" disabled={isDocumentPending}>
-              Complete Onboarding
+            <Button
+              className="w-max"
+              disabled={isDocumentPending || isPostFinishOnboardingPending}
+            >
+              {isPostFinishOnboardingPending
+                ? "Completing..."
+                : "Complete Onboarding"}
             </Button>
           </form>
         </Form>
