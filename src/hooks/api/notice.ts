@@ -94,6 +94,26 @@ const updateNotice = (
   return api.put(`/notices/${id}`, data);
 };
 
+const publishNotice = (id: number): Promise<TApiSuccess<TNotice>> => {
+  return api.put(`/notices/${id}/publish`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+const archiveNotice = (id: number): Promise<TApiSuccess<TNotice>> => {
+  return api.put(`/notices/${id}/archive`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+const deleteNotice = (id: number): Promise<TApiSuccess<TNotice>> => {
+  return api.delete(`/notices/${id}`);
+};
+
 const getNoticeAnalytics = (): Promise<TApiSuccess<TNoticeAnalytics>> => {
   return api.get("/notices/analytics");
 };
@@ -134,6 +154,36 @@ export const useUpdateNotice = (
   return useMutation({
     mutationKey: ["useUpdateNotice"],
     mutationFn: (data: Partial<TNotice>) => updateNotice(id, data),
+    ...options,
+  });
+};
+
+export const usePublishNotice = (
+  options?: TMutationOpts<number, TNotice>
+) => {
+  return useMutation({
+    mutationKey: ["usePublishNotice"],
+    mutationFn: (id: number) => publishNotice(id),
+    ...options,
+  });
+};
+
+export const useArchiveNotice = (
+  options?: TMutationOpts<number, TNotice>
+) => {
+  return useMutation({
+    mutationKey: ["useArchiveNotice"],
+    mutationFn: (id: number) => archiveNotice(id),
+    ...options,
+  });
+};
+
+export const useDeleteNotice = (
+  options?: TMutationOpts<number, TNotice>
+) => {
+  return useMutation({
+    mutationKey: ["useDeleteNotice"],
+    mutationFn: (id: number) => deleteNotice(id),
     ...options,
   });
 };

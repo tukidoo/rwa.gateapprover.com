@@ -40,13 +40,12 @@ function AppSidebar() {
         {/* Header */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-lg font-bold">
-            RWA Dashboard
+            GateApprover
           </SidebarGroupLabel>
         </SidebarGroup>
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {MAIN_NAVIGATION.map((item) => (
@@ -113,6 +112,7 @@ export default function DashboardLayout({
               {/* Header */}
               <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                 <SidebarTrigger />
+                <h1 className="text-xl font-bold text-gray-800">GateApprover : A complete Building Management System</h1>
                 <div className="flex-1" />
               </header>
 

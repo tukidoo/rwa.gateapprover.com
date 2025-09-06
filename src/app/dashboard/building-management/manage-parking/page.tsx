@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useGetAllNotices, useGetNoticeAnalytics, usePublishNotice, useArchiveNotice, useDeleteNotice } from "@/hooks/api/notice";
+import { useState, useMemo, useEffect } from "react";
+import { useGetBuildingParkings } from "@/hooks/api/building-parkings";
 import {
   Table,
   TableBody,
@@ -10,51 +10,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
-  DropdownMenuItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Loader2,
-  MoreHorizontal,
-  Pin,
-  Trash2,
+  Car,
   Plus,
-  Eye,
-  TrendingUp,
-  BarChart3,
-  Activity,
-  Archive,
-  XCircle,
-  Globe,
-  FileText,
   Search,
+  Filter,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  ParkingCircle,
   ArrowLeft,
-  Calendar,
-  User,
+  MapPin,
   Hash,
   Building,
+  Calendar,
   Settings,
-  Filter,
   AlertCircle,
   CheckCircle2,
   Clock,
-  Edit,
+  User,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Card,
@@ -63,106 +48,74 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { toast } from "sonner";
 
-export default function NoticesPage() {
-  const router = useRouter();
+export default function ManageParkingPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const {
-    data: noticesData,
+    data: parkingsData,
     isLoading,
     error,
-    refetch: refetchNotices,
-  } = useGetAllNotices(
-    {
-      page: 1,
-      page_size: 50, // Increased to show more notices
-    },
-    {
-      enabled: true,
-    }
-  );
+  } = useGetBuildingParkings();
 
-  const {
-    data: noticeAnalytics,
-    isLoading: isNoticeAnalyticsLoading,
-    isError: isNoticeAnalyticsError,
-    refetch: refetchAnalytics,
-  } = useGetNoticeAnalytics();
+  const filteredParkings = useMemo(() => {
+    const parkings = parkingsData?.data?.data || parkingsData?.data || [];
+    if (!Array.isArray(parkings)) return [];
+    
+    return parkings.filter((parking) => {
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = (
+        (parking.slot_number?.toLowerCase() || '').includes(searchLower) ||
+        (parking.zone_name_zone_type?.toLowerCase() || '').includes(searchLower) ||
+        (parking.floor_level?.toLowerCase() || '').includes(searchLower) ||
+        (parking.name?.toLowerCase() || '').includes(searchLower) ||
+        (parking.unit_number?.toLowerCase() || '').includes(searchLower) ||
+        (parking.vehicle_number?.toLowerCase() || '').includes(searchLower) ||
+        (parking.vehicle_make?.toLowerCase() || '').includes(searchLower) ||
+        (parking.vehicle_model?.toLowerCase() || '').includes(searchLower) ||
+        (parking.vehicle_color?.toLowerCase() || '').includes(searchLower)
+      );
+      
+      return matchesSearch;
+    });
+  }, [parkingsData, searchQuery]);
 
-  const publishNoticeMutation = usePublishNotice({
-    onSuccess: () => {
-      toast.success("Notice published successfully!");
-      refetchNotices();
-      refetchAnalytics();
-    },
-    onError: (error) => {
-      toast.error("Failed to publish notice. Please try again.");
-      console.error("Publish error:", error);
-    },
-  });
+  const paginatedParkings = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredParkings.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredParkings, currentPage, itemsPerPage]);
 
-  const archiveNoticeMutation = useArchiveNotice({
-    onSuccess: () => {
-      toast.success("Notice archived successfully!");
-      refetchNotices();
-      refetchAnalytics();
-    },
-    onError: (error) => {
-      toast.error("Failed to archive notice. Please try again.");
-      console.error("Archive error:", error);
-    },
-  });
+  const totalPages = Math.ceil(filteredParkings.length / itemsPerPage);
 
-  const deleteNoticeMutation = useDeleteNotice({
-    onSuccess: () => {
-      toast.success("Notice deleted successfully!");
-      refetchNotices();
-      refetchAnalytics();
-    },
-    onError: (error) => {
-      toast.error("Failed to delete notice. Please try again.");
-      console.error("Delete error:", error);
-    },
-  });
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
-  const handlePublish = (noticeId: number) => {
-    publishNoticeMutation.mutate(noticeId);
-  };
-
-  const handleArchive = (noticeId: number) => {
-    archiveNoticeMutation.mutate(noticeId);
-  };
-
-  const handleDelete = (noticeId: number) => {
-    deleteNoticeMutation.mutate(noticeId);
-  };
-
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string | null) => {
+    if (!status) return <Badge variant="outline">-</Badge>;
+    
     switch (status.toLowerCase()) {
-      case "published":
+      case "occupied":
+        return (
+          <Badge className="bg-red-100 text-red-800 border-red-200">
+            <Car className="h-3 w-3 mr-1" />
+            Occupied
+          </Badge>
+        );
+      case "available":
         return (
           <Badge className="bg-green-100 text-green-800 border-green-200">
-            <Globe className="h-3 w-3 mr-1" />
-            Published
+            <CheckCircle2 className="h-3 w-3 mr-1" />
+            Available
           </Badge>
         );
-      case "draft":
+      case "reserved":
         return (
           <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-            <FileText className="h-3 w-3 mr-1" />
-            Draft
-          </Badge>
-        );
-      case "archived":
-        return (
-          <Badge className="bg-gray-100 text-gray-800 border-gray-200">
-            <Archive className="h-3 w-3 mr-1" />
-            Archived
+            <Clock className="h-3 w-3 mr-1" />
+            Reserved
           </Badge>
         );
       default:
@@ -174,38 +127,45 @@ export default function NoticesPage() {
     }
   };
 
-  const canPublish = (status: string) => {
-    return status.toLowerCase() === "draft";
+  const getAllocationBadge = (allocationType: string | null) => {
+    if (!allocationType) return <Badge variant="outline">-</Badge>;
+    
+    switch (allocationType.toLowerCase()) {
+      case "permanent":
+        return (
+          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+            Permanent
+          </Badge>
+        );
+      case "temporary":
+        return (
+          <Badge className="bg-orange-100 text-orange-800 border-orange-200">
+            Temporary
+          </Badge>
+        );
+      case "visitor":
+        return (
+          <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+            Visitor
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="outline">
+            {allocationType}
+          </Badge>
+        );
+    }
   };
 
-  const filteredNotices = useMemo(() => {
-    if (!noticesData?.data?.notices) return [];
-    
-    return noticesData.data.notices.filter((notice) => {
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = (
-        (notice.title?.toLowerCase() || '').includes(searchLower) ||
-        (notice.content?.toLowerCase() || '').includes(searchLower) ||
-        (notice.author_name?.toLowerCase() || '').includes(searchLower) ||
-        (notice.category?.toLowerCase() || '').includes(searchLower)
-      );
-      
-      const matchesStatus = statusFilter === "all" || notice.status === statusFilter;
-      
-      return matchesSearch && matchesStatus;
-    });
-  }, [noticesData?.data?.notices, searchQuery, statusFilter]);
-
-  const paginatedNotices = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredNotices.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredNotices, currentPage, itemsPerPage]);
-
-  const totalPages = Math.ceil(filteredNotices.length / itemsPerPage);
-
-  const canArchive = (status: string) => {
-    const statusLower = status.toLowerCase();
-    return statusLower === "draft" || statusLower === "published";
+  const getInitials = (name: string | null) => {
+    if (!name) return "-";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   const LoadingSkeleton = () => (
@@ -277,7 +237,7 @@ export default function NoticesPage() {
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-2 text-red-600 mb-4">
               <AlertCircle className="h-5 w-5" />
-              <span>Error loading notices</span>
+              <span>Error loading parking data</span>
             </div>
           </div>
         </div>
@@ -285,9 +245,13 @@ export default function NoticesPage() {
     );
   }
 
-  const totalNotices = noticesData?.data?.notices.length || 0;
-  const publishedNotices = noticesData?.data?.notices.filter(n => n.status === 'published').length || 0;
-  const draftNotices = noticesData?.data?.notices.filter(n => n.status === 'draft').length || 0;
+  // Debug API response structure
+  console.log('Parkings Data:', parkingsData);
+  
+  const parkings = parkingsData?.data?.data || parkingsData?.data || [];
+  const totalSlots = Array.isArray(parkings) ? parkings.length : 0;
+  const occupiedSlots = Array.isArray(parkings) ? parkings.filter(p => p.status === 'occupied').length : 0;
+  const availableSlots = Array.isArray(parkings) ? parkings.filter(p => p.status === 'available').length : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
@@ -300,27 +264,27 @@ export default function NoticesPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
-                  <Link href="/dashboard">
+                  <Link href="/dashboard/building-management">
                     <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
                       <ArrowLeft className="h-4 w-4 mr-2" />
-                      Back to Dashboard
+                      Back to Building Management
                     </Button>
                   </Link>
                 </div>
                 <div>
                   <h1 className="text-4xl font-bold text-white mb-2 animate-fadeIn">
-                    Notices
+                    Manage Parking
                   </h1>
                   <p className="text-purple-100 text-lg animate-slideUp">
-                    Manage building notices, announcements, and communications
+                    Manage parking spaces, assignments, and visitor parking
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-5xl font-bold text-white animate-pulseGlow">
-                  {totalNotices}
+                  {totalSlots}
                 </div>
-                <div className="text-purple-100 text-lg">Total Notices</div>
+                <div className="text-purple-100 text-lg">Total Slots</div>
               </div>
             </div>
           </div>
@@ -332,11 +296,25 @@ export default function NoticesPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">Total Notices</p>
-                  <p className="text-3xl font-bold">{totalNotices}</p>
+                  <p className="text-purple-100 text-sm font-medium">Total Slots</p>
+                  <p className="text-3xl font-bold">{totalSlots}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                  <FileText className="h-6 w-6" />
+                  <ParkingCircle className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-red-100 text-sm font-medium">Occupied</p>
+                  <p className="text-3xl font-bold">{occupiedSlots}</p>
+                </div>
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <Car className="h-6 w-6" />
                 </div>
               </div>
             </CardContent>
@@ -346,25 +324,11 @@ export default function NoticesPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Published</p>
-                  <p className="text-3xl font-bold">{publishedNotices}</p>
+                  <p className="text-green-100 text-sm font-medium">Available</p>
+                  <p className="text-3xl font-bold">{availableSlots}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                  <Globe className="h-6 w-6" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-yellow-500 to-orange-500 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-yellow-100 text-sm font-medium">Drafts</p>
-                  <p className="text-3xl font-bold">{draftNotices}</p>
-                </div>
-                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                  <FileText className="h-6 w-6" />
+                  <CheckCircle2 className="h-6 w-6" />
                 </div>
               </div>
             </CardContent>
@@ -378,28 +342,21 @@ export default function NoticesPage() {
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search notices, title, content..."
+                  placeholder="Search parking slots, residents, vehicles..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                 />
+                {searchQuery && (
+                  <div className="text-sm text-gray-500 mt-1">
+                    {filteredParkings.length} slot{filteredParkings.length !== 1 ? 's' : ''} found
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
-                    <Filter className="h-4 w-4 mr-2" />
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white">
                   <Plus className="h-4 w-4 mr-2" />
-                  New Notice
+                  Add Parking Slot
                 </Button>
                 <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
                   <Settings className="h-4 w-4 mr-2" />
@@ -410,15 +367,15 @@ export default function NoticesPage() {
           </CardContent>
         </Card>
 
-        {/* Notices Table */}
+        {/* Parking Table */}
         <Card className="shadow-lg border-0 animate-slideUp mt-8">
           <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 border-b border-purple-200">
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center">
-              <FileText className="h-5 w-5 mr-2 text-purple-600" />
-              Notices
+              <ParkingCircle className="h-5 w-5 mr-2 text-purple-600" />
+              Parking Slots
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Showing {paginatedNotices.length} of {filteredNotices.length} notices
+              Showing {paginatedParkings.length} of {filteredParkings.length} slots
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -426,84 +383,100 @@ export default function NoticesPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold text-gray-700">Notice Details</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Author</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Category</TableHead>
+                    <TableHead className="font-semibold text-gray-700">Slot Details</TableHead>
+                    <TableHead className="font-semibold text-gray-700">Resident</TableHead>
+                    <TableHead className="font-semibold text-gray-700">Vehicle</TableHead>
+                    <TableHead className="font-semibold text-gray-700">Location</TableHead>
                     <TableHead className="font-semibold text-gray-700">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Priority</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Created</TableHead>
+                    <TableHead className="font-semibold text-gray-700">Allocation</TableHead>
                     <TableHead className="font-semibold text-gray-700 text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedNotices.length === 0 ? (
+                  {paginatedParkings.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="h-96 text-center">
                         <div className="flex flex-col items-center justify-center space-y-4">
                           <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                            <FileText className="h-8 w-8 text-purple-600" />
+                            <ParkingCircle className="h-8 w-8 text-purple-600" />
                           </div>
                           <div className="space-y-2">
                             <p className="text-lg font-medium text-gray-900">
-                              No notices found
+                              No parking slots found
                             </p>
                             <p className="text-sm text-gray-500">
-                              {searchQuery || statusFilter !== "all" 
+                              {searchQuery 
                                 ? 'Try adjusting your search criteria' 
-                                : 'Get started by creating your first notice'}
+                                : 'Get started by adding parking slots to your building'}
                             </p>
                           </div>
                         </div>
                       </TableCell>
                     </TableRow>
                   ) : (
-                    paginatedNotices.map((notice) => (
+                    paginatedParkings.map((parking) => (
                       <TableRow
-                        key={notice.id}
+                        key={parking.id}
                         className="hover:bg-purple-50/50 transition-colors duration-200 border-b border-gray-100"
                       >
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                              <FileText className="h-5 w-5 text-purple-600" />
+                              <Hash className="h-5 w-5 text-purple-600" />
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                                {notice.title || '-'}
+                              <div className="text-sm font-medium text-gray-900">
+                                {parking.slot_number || '-'}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {notice.content ? `${notice.content.substring(0, 50)}...` : '-'}
+                                {parking.floor_level || '-'}
                               </div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center text-sm text-gray-900">
-                            <User className="h-4 w-4 mr-2 text-gray-400" />
-                            {notice.author_name || '-'}
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                              <span className="text-xs font-medium text-gray-600">
+                                {getInitials(parking.name)}
+                              </span>
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {parking.name || '-'}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {parking.unit_number || '-'}
+                              </div>
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
-                          <Badge variant="outline" className="text-xs">
-                            {notice.category || '-'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap">
-                          {getStatusBadge(notice.status)}
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap">
-                          <Badge 
-                            variant={notice.priority === 'high' ? 'destructive' : 'secondary'}
-                            className="text-xs"
-                          >
-                            {notice.priority || '-'}
-                          </Badge>
+                          <div className="space-y-1">
+                            <div className="text-sm font-medium text-gray-900">
+                              {parking.vehicle_number || '-'}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {parking.vehicle_make && parking.vehicle_model 
+                                ? `${parking.vehicle_make} ${parking.vehicle_model}` 
+                                : '-'}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {parking.vehicle_color || '-'}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center text-sm text-gray-900">
-                            <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                            {notice.created_at ? format(notice.created_at, "MMM dd, yyyy") : '-'}
+                            <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                            {parking.zone_name_zone_type || '-'}
                           </div>
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap">
+                          {getStatusBadge(parking.status)}
+                        </TableCell>
+                        <TableCell className="px-6 py-4 whitespace-nowrap">
+                          {getAllocationBadge(parking.allocation_type)}
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap text-center">
                           <DropdownMenu>
@@ -511,45 +484,17 @@ export default function NoticesPage() {
                               <MoreHorizontal className="h-4 w-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => router.push(`/dashboard/notices/${notice.id}`)}
-                                className="cursor-pointer"
-                              >
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => router.push(`/dashboard/notices/${notice.id}/edit`)}
-                                className="cursor-pointer"
-                              >
+                              <DropdownMenuItem className="cursor-pointer">
                                 <Edit className="h-4 w-4 mr-2" />
-                                Edit Notice
+                                Edit Slot
                               </DropdownMenuItem>
-                              {canPublish(notice.status) && (
-                                <DropdownMenuItem 
-                                  onClick={() => handlePublish(notice.id)}
-                                  disabled={publishNoticeMutation.isPending}
-                                >
-                                  <Globe className="h-4 w-4 mr-2" />
-                                  {publishNoticeMutation.isPending ? "Publishing..." : "Publish"}
-                                </DropdownMenuItem>
-                              )}
-                              {canArchive(notice.status) && (
-                                <DropdownMenuItem 
-                                  onClick={() => handleArchive(notice.id)}
-                                  disabled={archiveNoticeMutation.isPending}
-                                >
-                                  <Archive className="h-4 w-4 mr-2" />
-                                  {archiveNoticeMutation.isPending ? "Archiving..." : "Archive"}
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem 
-                                onClick={() => handleDelete(notice.id)}
-                                disabled={deleteNoticeMutation.isPending}
-                                className="text-red-600"
-                              >
+                              <DropdownMenuItem className="cursor-pointer">
+                                <User className="h-4 w-4 mr-2" />
+                                Assign Resident
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="cursor-pointer text-red-600">
                                 <Trash2 className="h-4 w-4 mr-2" />
-                                {deleteNoticeMutation.isPending ? "Deleting..." : "Delete"}
+                                Remove Slot
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
