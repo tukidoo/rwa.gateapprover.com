@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useGetBuildingStats, useGetBuildingStaff, TBuildingStaff } from "@/hooks/api/building-management";
+import Image from "next/image";
+import {
+  useGetBuildingStats,
+  useGetBuildingStaff,
+  TBuildingStaff,
+} from "@/hooks/api/building-management";
 import {
   Card,
   CardContent,
@@ -16,9 +21,6 @@ import {
   Home,
   Settings,
   Plus,
-  Search,
-  Filter,
-  MapPin,
   Phone,
   Mail,
   AlertTriangle,
@@ -29,16 +31,14 @@ import {
   Shield,
   Car,
   Clock,
-  UserPlus,
-  FileText,
-  Wrench,
 } from "lucide-react";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
 export default function BuildingManagementPage() {
-  const [activeTab, setActiveTab] = useState<'active' | 'engaged' | 'absent'>('active');
+  const [activeTab, setActiveTab] = useState<"active" | "engaged" | "absent">(
+    "active"
+  );
 
   const {
     data: buildingStatsData,
@@ -61,8 +61,12 @@ export default function BuildingManagementPage() {
           <div className="flex flex-col items-center gap-4">
             <XCircle className="h-12 w-12 text-destructive" />
             <div>
-              <h3 className="text-lg font-semibold text-destructive">Failed to load building data</h3>
-              <p className="text-sm text-muted-foreground">Please try again later</p>
+              <h3 className="text-lg font-semibold text-destructive">
+                Failed to load building data
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Please try again later
+              </p>
             </div>
             <Button onClick={() => refetch()} variant="outline">
               Retry
@@ -75,15 +79,29 @@ export default function BuildingManagementPage() {
 
   const buildings = buildingStatsData?.data || [];
   const staff = buildingStaffData?.data || [];
-  const totalBuildings = buildings.length;
-  const totalUnits = buildings.reduce((sum, building) => sum + building.total_units, 0);
-  const occupiedUnits = buildings.reduce((sum, building) => sum + building.occupied_units, 0);
-  const totalResidents = buildings.reduce((sum, building) => sum + building.total_residents, 0);
+  const totalUnits = buildings.reduce(
+    (sum, building) => sum + building.total_units,
+    0
+  );
+  const occupiedUnits = buildings.reduce(
+    (sum, building) => sum + building.occupied_units,
+    0
+  );
+  const totalResidents = buildings.reduce(
+    (sum, building) => sum + building.total_residents,
+    0
+  );
 
   // Categorize staff by status
-  const activeTodayStaff = staff.filter(member => member.staff_status === 'active');
-  const currentlyEngagedStaff = staff.filter(member => member.staff_status === 'engaged');
-  const absentStaff = staff.filter(member => member.staff_status === 'absent');
+  const activeTodayStaff = staff.filter(
+    (member) => member.staff_status === "active"
+  );
+  const currentlyEngagedStaff = staff.filter(
+    (member) => member.staff_status === "engaged"
+  );
+  const absentStaff = staff.filter(
+    (member) => member.staff_status === "absent"
+  );
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -109,11 +127,7 @@ export default function BuildingManagementPage() {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -123,9 +137,11 @@ export default function BuildingManagementPage() {
       <div className="flex items-center gap-3">
         <div className="flex-shrink-0">
           {member.profile_image_url ? (
-            <img
+            <Image
               src={member.profile_image_url}
               alt={member.full_name}
+              width={32}
+              height={32}
               className="h-8 w-8 rounded-full object-cover border-2 border-purple-200"
             />
           ) : (
@@ -161,7 +177,7 @@ export default function BuildingManagementPage() {
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
         <div className="relative">
           <h1 className="text-5xl font-bold tracking-tight mb-2 animate-fade-in">
-            {buildings.length > 0 ? buildings[0].name : 'Building Management'}
+            {buildings.length > 0 ? buildings[0].name : "Building Management"}
           </h1>
           <p className="text-purple-100 text-xl">
             Complete building management and property oversight
@@ -169,7 +185,6 @@ export default function BuildingManagementPage() {
         </div>
       </div>
 
-     
       {/* Loading State */}
       {isLoading && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -184,9 +199,6 @@ export default function BuildingManagementPage() {
       )}
 
       {/* Quick Stats with Wow Factor */}
-      
-
- 
 
       {/* Stats Section */}
       <div className="grid gap-6 md:grid-cols-3 mb-8">
@@ -194,35 +206,49 @@ export default function BuildingManagementPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Residents</p>
-                <p className="text-3xl font-bold text-gray-800">{totalResidents}</p>
-                <p className="text-xs text-gray-500">Current building residents</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Residents
+                </p>
+                <p className="text-3xl font-bold text-gray-800">
+                  {totalResidents}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Current building residents
+                </p>
               </div>
               <Users className="h-8 w-8 text-[#7d51ff]" />
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Units</p>
                 <p className="text-3xl font-bold text-gray-800">{totalUnits}</p>
-                <p className="text-xs text-gray-500">Available units in building</p>
+                <p className="text-xs text-gray-500">
+                  Available units in building
+                </p>
               </div>
               <Home className="h-8 w-8 text-[#7d51ff]" />
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Occupied Units</p>
-                <p className="text-3xl font-bold text-gray-800">{occupiedUnits}</p>
-                <p className="text-xs text-gray-500">Currently occupied units</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Occupied Units
+                </p>
+                <p className="text-3xl font-bold text-gray-800">
+                  {occupiedUnits}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Currently occupied units
+                </p>
               </div>
               <CheckCircle className="h-8 w-8 text-[#7d51ff]" />
             </div>
@@ -234,37 +260,55 @@ export default function BuildingManagementPage() {
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          <Button className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+          <Button
+            className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            asChild
+          >
             <a href="/dashboard/building-management/manage-staff">
               <Users className="h-5 w-5 mr-2" />
               Manage Staff
             </a>
           </Button>
-          <Button className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+          <Button
+            className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            asChild
+          >
             <Link href="/dashboard/building-management/manage-units">
               <Home className="h-5 w-5 mr-2" />
               Manage Units
             </Link>
           </Button>
-          <Button className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+          <Button
+            className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            asChild
+          >
             <a href="/dashboard/building-management/manage-amenities">
               <Settings className="h-5 w-5 mr-2" />
               Manage Amenities
             </a>
           </Button>
-          <Button className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+          <Button
+            className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            asChild
+          >
             <a href="/dashboard/building-management/manage-parking">
               <Car className="h-5 w-5 mr-2" />
               Manage Parking
             </a>
           </Button>
-          <Button className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+          <Button
+            className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            asChild
+          >
             <a href="/dashboard/building-management/resident-directory">
               <Users className="h-5 w-5 mr-2" />
               Resident Directory
             </a>
           </Button>
-          <Button className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300" asChild>
+          <Button
+            className="h-16 bg-gradient-to-r from-[#7d51ff] to-[#9d71ff] hover:from-[#9d71ff] hover:to-[#b591ff] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+            asChild
+          >
             <a href="/dashboard/building-management/building-settings">
               <Settings className="h-5 w-5 mr-2" />
               Building Settings
@@ -290,15 +334,19 @@ export default function BuildingManagementPage() {
             {isStaffLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="h-6 w-6 animate-spin" />
-                <span className="ml-2 text-sm text-muted-foreground">Loading staff...</span>
+                <span className="ml-2 text-sm text-muted-foreground">
+                  Loading staff...
+                </span>
               </div>
             ) : staffError ? (
               <div className="text-center py-8">
                 <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
-                <p className="text-sm text-destructive">Failed to load staff data</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <p className="text-sm text-destructive">
+                  Failed to load staff data
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => refetchStaff()}
                   className="mt-2"
                 >
@@ -308,58 +356,62 @@ export default function BuildingManagementPage() {
             ) : staff.length === 0 ? (
               <div className="text-center py-8">
                 <User className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No staff members found</p>
+                <p className="text-sm text-muted-foreground">
+                  No staff members found
+                </p>
               </div>
             ) : (
               <div className="w-full">
                 {/* Custom Tab Navigation */}
                 <div className="grid grid-cols-3 gap-1 bg-purple-50 border border-purple-200 rounded-lg p-1 mb-4">
                   <Button
-                    variant={activeTab === 'active' ? 'default' : 'ghost'}
+                    variant={activeTab === "active" ? "default" : "ghost"}
                     size="sm"
-                    onClick={() => setActiveTab('active')}
+                    onClick={() => setActiveTab("active")}
                     className={`text-xs ${
-                      activeTab === 'active' 
-                        ? 'bg-[#7d51ff] text-white hover:bg-[#9d71ff]' 
-                        : 'text-gray-700 hover:bg-purple-100'
+                      activeTab === "active"
+                        ? "bg-[#7d51ff] text-white hover:bg-[#9d71ff]"
+                        : "text-gray-700 hover:bg-purple-100"
                     }`}
                   >
                     Active Today ({activeTodayStaff.length})
                   </Button>
                   <Button
-                    variant={activeTab === 'engaged' ? 'default' : 'ghost'}
+                    variant={activeTab === "engaged" ? "default" : "ghost"}
                     size="sm"
-                    onClick={() => setActiveTab('engaged')}
+                    onClick={() => setActiveTab("engaged")}
                     className={`text-xs ${
-                      activeTab === 'engaged' 
-                        ? 'bg-[#7d51ff] text-white hover:bg-[#9d71ff]' 
-                        : 'text-gray-700 hover:bg-purple-100'
+                      activeTab === "engaged"
+                        ? "bg-[#7d51ff] text-white hover:bg-[#9d71ff]"
+                        : "text-gray-700 hover:bg-purple-100"
                     }`}
                   >
                     Currently Engaged ({currentlyEngagedStaff.length})
                   </Button>
                   <Button
-                    variant={activeTab === 'absent' ? 'default' : 'ghost'}
+                    variant={activeTab === "absent" ? "default" : "ghost"}
                     size="sm"
-                    onClick={() => setActiveTab('absent')}
+                    onClick={() => setActiveTab("absent")}
                     className={`text-xs ${
-                      activeTab === 'absent' 
-                        ? 'bg-[#7d51ff] text-white hover:bg-[#9d71ff]' 
-                        : 'text-gray-700 hover:bg-purple-100'
+                      activeTab === "absent"
+                        ? "bg-[#7d51ff] text-white hover:bg-[#9d71ff]"
+                        : "text-gray-700 hover:bg-purple-100"
                     }`}
                   >
                     Absent ({absentStaff.length})
                   </Button>
                 </div>
-                
+
                 {/* Tab Content */}
                 <div className="space-y-2">
-                  {activeTab === 'active' && (
+                  {activeTab === "active" && (
                     <>
                       {activeTodayStaff.length === 0 ? (
                         <div className="text-center py-6">
                           <CheckCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                          <p className="text-sm text-gray-600">No active staff today</p>
+                          <p className="text-sm text-gray-600">
+                            No active staff today
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -370,13 +422,15 @@ export default function BuildingManagementPage() {
                       )}
                     </>
                   )}
-                  
-                  {activeTab === 'engaged' && (
+
+                  {activeTab === "engaged" && (
                     <>
                       {currentlyEngagedStaff.length === 0 ? (
                         <div className="text-center py-6">
                           <Clock className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                          <p className="text-sm text-gray-600">No staff currently engaged</p>
+                          <p className="text-sm text-gray-600">
+                            No staff currently engaged
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -387,13 +441,15 @@ export default function BuildingManagementPage() {
                       )}
                     </>
                   )}
-                  
-                  {activeTab === 'absent' && (
+
+                  {activeTab === "absent" && (
                     <>
                       {absentStaff.length === 0 ? (
                         <div className="text-center py-6">
                           <XCircle className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-                          <p className="text-sm text-gray-600">All staff are present</p>
+                          <p className="text-sm text-gray-600">
+                            All staff are present
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -407,7 +463,7 @@ export default function BuildingManagementPage() {
                 </div>
               </div>
             )}
-            
+
             <div className="mt-4 pt-4 border-t border-purple-100">
               <Button className="w-full" variant="outline" asChild>
                 <a href="/dashboard/building-management/manage-staff">
@@ -426,76 +482,92 @@ export default function BuildingManagementPage() {
               <Shield className="h-5 w-5 text-[#7d51ff]" />
               Security Guards
             </CardTitle>
-            <CardDescription className="text-gray-600">Security personnel and their details</CardDescription>
+            <CardDescription className="text-gray-600">
+              Security personnel and their details
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {isStaffLoading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-6 w-6 animate-spin" />
-                <span className="ml-2 text-sm text-muted-foreground">Loading security...</span>
+                <span className="ml-2 text-sm text-muted-foreground">
+                  Loading security...
+                </span>
               </div>
             ) : staffError ? (
               <div className="text-center py-4">
                 <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
-                <p className="text-sm text-destructive">Failed to load security data</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <p className="text-sm text-destructive">
+                  Failed to load security data
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => refetchStaff()}
                   className="mt-2"
                 >
                   Retry
                 </Button>
               </div>
-            ) : (() => {
-              const securityStaff = staff.filter(member => 
-                member.department.toLowerCase().includes('security') || 
-                member.department.toLowerCase().includes('guard')
-              );
-              return securityStaff.length === 0 ? (
-                <div className="text-center py-4">
-                  <Shield className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">No security guards found</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {securityStaff.slice(0, 4).map((member) => (
-                    <div key={member.staff_id} className="flex items-center justify-between p-3 bg-white border border-purple-100 rounded-lg hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0">
-                          {member.profile_image_url ? (
-                            <img
-                              src={member.profile_image_url}
-                              alt={member.full_name}
-                              className="h-8 w-8 rounded-full object-cover border-2 border-purple-200"
-                            />
-                          ) : (
-                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center border-2 border-purple-200">
-                              <Shield className="h-4 w-4 text-[#7d51ff]" />
-                            </div>
-                          )}
+            ) : (
+              (() => {
+                const securityStaff = staff.filter(
+                  (member) =>
+                    member.department.toLowerCase().includes("security") ||
+                    member.department.toLowerCase().includes("guard")
+                );
+                return securityStaff.length === 0 ? (
+                  <div className="text-center py-4">
+                    <Shield className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      No security guards found
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {securityStaff.slice(0, 4).map((member) => (
+                      <div
+                        key={member.staff_id}
+                        className="flex items-center justify-between p-3 bg-white border border-purple-100 rounded-lg hover:shadow-md transition-all duration-200"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex-shrink-0">
+                            {member.profile_image_url ? (
+                              <Image
+                                src={member.profile_image_url}
+                                alt={member.full_name}
+                                width={32}
+                                height={32}
+                                className="h-8 w-8 rounded-full object-cover border-2 border-purple-200"
+                              />
+                            ) : (
+                              <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center border-2 border-purple-200">
+                                <Shield className="h-4 w-4 text-[#7d51ff]" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800 truncate">
+                              {member.full_name}
+                            </p>
+                            <p className="text-xs text-gray-600 truncate">
+                              {member.role_name} • {member.department}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">
-                            {member.full_name}
-                          </p>
-                          <p className="text-xs text-gray-600 truncate">
-                            {member.role_name} • {member.department}
-                          </p>
+                        <div className="flex items-center gap-2">
+                          {getStatusBadge(member.staff_status)}
+                          <span className="text-xs text-gray-500">
+                            ID: {member.employee_id}
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {getStatusBadge(member.staff_status)}
-                        <span className="text-xs text-gray-500">
-                          ID: {member.employee_id}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
-            
+                    ))}
+                  </div>
+                );
+              })()
+            )}
+
             <div className="mt-4 pt-4 border-t border-purple-100">
               <Button className="w-full" variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
@@ -523,7 +595,10 @@ export default function BuildingManagementPage() {
           ) : (
             <div className="space-y-4">
               {buildings.map((building) => (
-                <div key={building.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div
+                  key={building.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
                       <Building className="h-6 w-6 text-blue-600" />
@@ -539,7 +614,8 @@ export default function BuildingManagementPage() {
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Home className="h-3 w-3" />
-                          {building.total_units} units • {building.occupied_units} occupied
+                          {building.total_units} units •{" "}
+                          {building.occupied_units} occupied
                         </span>
                         <span className="flex items-center gap-1">
                           <Building className="h-3 w-3" />
@@ -556,11 +632,15 @@ export default function BuildingManagementPage() {
                     <div className="text-right text-sm">
                       <div className="flex items-center gap-1 mb-1">
                         <Mail className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{building.contact_email}</span>
+                        <span className="text-muted-foreground">
+                          {building.contact_email}
+                        </span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{building.contact_phone}</span>
+                        <span className="text-muted-foreground">
+                          {building.contact_phone}
+                        </span>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">

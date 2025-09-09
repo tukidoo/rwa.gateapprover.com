@@ -1,6 +1,10 @@
 "use client";
 
-import { useGetUnitsList, useUpdateOccupancy } from "@/hooks/api/building-management";
+import {
+  useGetUnitsList,
+  useUpdateOccupancy,
+} from "@/hooks/api/building-management";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -15,7 +19,6 @@ import {
   Home,
   Plus,
   Search,
-  Filter,
   MoreHorizontal,
   Building,
   ArrowLeft,
@@ -25,9 +28,7 @@ import {
   User,
   UserX,
   Wrench,
-  CheckCircle,
   Phone,
-  Mail,
   X,
 } from "lucide-react";
 import {
@@ -45,12 +46,7 @@ export default function ManageUnitsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const {
-    data: unitsData,
-    isLoading,
-    error,
-    refetch,
-  } = useGetUnitsList();
+  const { data: unitsData, isLoading, error, refetch } = useGetUnitsList();
 
   const updateOccupancyMutation = useUpdateOccupancy();
 
@@ -66,13 +62,14 @@ export default function ManageUnitsPage() {
     return allUnits.filter((unit) => {
       // Search by unit number
       const unitNumberMatch = unit.unit_number.toLowerCase().includes(query);
-      
+
       // Search by tenant name (if exists)
-      const tenantNameMatch = unit.user_name && unit.user_name.toLowerCase().includes(query);
-      
+      const tenantNameMatch =
+        unit.user_name && unit.user_name.toLowerCase().includes(query);
+
       return unitNumberMatch || tenantNameMatch;
     });
-  }, [allUnits, searchQuery]);
+  }, [unitsData?.data, searchQuery]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredUnits.length / itemsPerPage);
@@ -131,22 +128,29 @@ export default function ManageUnitsPage() {
     }
   };
 
-  const handleStatusUpdate = async (unitId: number, unitNumber: string, newStatus: 'occupied' | 'vacant' | 'maintenance') => {
+  const handleStatusUpdate = async (
+    unitId: number,
+    unitNumber: string,
+    newStatus: "occupied" | "vacant" | "maintenance"
+  ) => {
     try {
       const requestData = {
         unit_id: unitId.toString(),
         occupancy_status: newStatus,
       };
-      
-      console.log('Sending update request:', requestData);
-      
+
+      console.log("Sending update request:", requestData);
+
       await updateOccupancyMutation.mutateAsync(requestData);
       toast.success(`Unit ${unitNumber} status updated to ${newStatus}`);
       refetch();
     } catch (error) {
-      console.error('Error updating unit status:', error);
-      console.error('Request data was:', { unit_id: unitId.toString(), occupancy_status: newStatus });
-      toast.error('Failed to update unit status');
+      console.error("Error updating unit status:", error);
+      console.error("Request data was:", {
+        unit_id: unitId.toString(),
+        occupancy_status: newStatus,
+      });
+      toast.error("Failed to update unit status");
     }
   };
 
@@ -154,8 +158,16 @@ export default function ManageUnitsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <Button variant="ghost" size="sm" asChild className="text-[#6e2e3a] hover:text-[#8b3a4a] hover:bg-red-50">
-            <a href="/dashboard/building-management" className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="text-[#6e2e3a] hover:text-[#8b3a4a] hover:bg-red-50"
+          >
+            <a
+              href="/dashboard/building-management"
+              className="flex items-center gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               Back to Building Management
             </a>
@@ -164,9 +176,12 @@ export default function ManageUnitsPage() {
         <Card className="border-destructive/50 bg-destructive/5">
           <CardContent className="p-6 text-center">
             <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
-            <h3 className="text-lg font-medium text-destructive mb-2">Failed to load units data</h3>
+            <h3 className="text-lg font-medium text-destructive mb-2">
+              Failed to load units data
+            </h3>
             <p className="text-muted-foreground mb-4">
-              There was an error loading the units information. Please try again.
+              There was an error loading the units information. Please try
+              again.
             </p>
             <Button onClick={() => refetch()} variant="outline">
               Try Again
@@ -181,8 +196,16 @@ export default function ManageUnitsPage() {
     <div className="space-y-6">
       {/* Back Link */}
       <div>
-        <Button variant="ghost" size="sm" asChild className="text-gray-800 hover:text-gray-900 hover:bg-purple-50">
-          <a href="/dashboard/building-management" className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="text-gray-800 hover:text-gray-900 hover:bg-purple-50"
+        >
+          <a
+            href="/dashboard/building-management"
+            className="flex items-center gap-2"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Building Management
           </a>
@@ -193,7 +216,9 @@ export default function ManageUnitsPage() {
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-[#7d51ff] via-[#9d71ff] to-[#b591ff] p-8 text-white">
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
         <div className="relative">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Manage Units</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
+            Manage Units
+          </h1>
           <p className="text-purple-100 text-lg">
             Manage building units, occupancy status, and tenant assignments.
           </p>
@@ -232,10 +257,13 @@ export default function ManageUnitsPage() {
         <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50 border-b border-purple-200">
           <CardTitle className="flex items-center gap-2 text-gray-800">
             <Home className="h-5 w-5 text-[#7d51ff]" />
-            Building Units ({filteredUnits.length}{searchQuery && ` of ${allUnits.length}`})
+            Building Units ({filteredUnits.length}
+            {searchQuery && ` of ${allUnits.length}`})
           </CardTitle>
           <CardDescription className="text-gray-600">
-            {searchQuery ? `Search results for "${searchQuery}"` : "Manage all units in the building and their occupancy status"}
+            {searchQuery
+              ? `Search results for "${searchQuery}"`
+              : "Manage all units in the building and their occupancy status"}
             {totalPages > 1 && (
               <span className="ml-2 text-sm font-medium">
                 • Page {currentPage} of {totalPages}
@@ -247,7 +275,9 @@ export default function ManageUnitsPage() {
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <span className="ml-2 text-muted-foreground">Loading units...</span>
+              <span className="ml-2 text-muted-foreground">
+                Loading units...
+              </span>
             </div>
           ) : allUnits.length === 0 ? (
             <div className="text-center py-8">
@@ -266,7 +296,8 @@ export default function ManageUnitsPage() {
               <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">No units found</h3>
               <p className="text-muted-foreground mb-4">
-                No units match your search for &quot;{searchQuery}&quot;. Try a different search term.
+                No units match your search for &quot;{searchQuery}&quot;. Try a
+                different search term.
               </p>
               <Button variant="outline" onClick={() => handleSearchChange("")}>
                 <X className="h-4 w-4 mr-2" />
@@ -276,16 +307,23 @@ export default function ManageUnitsPage() {
           ) : (
             <div className="space-y-4">
               {paginatedUnits.map((unit) => (
-                <Card key={unit.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-purple-200 hover:border-l-[#7d51ff]">
+                <Card
+                  key={unit.id}
+                  className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-purple-200 hover:border-l-[#7d51ff]"
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-6">
                       {/* Unit Icon */}
                       <div className="flex-shrink-0">
-                        <div className={`h-16 w-16 rounded-xl flex items-center justify-center border-2 ${
-                          unit.status === 'occupied' ? 'bg-emerald-50 border-emerald-200' :
-                          unit.status === 'vacant' ? 'bg-slate-50 border-slate-200' :
-                          'bg-amber-50 border-amber-200'
-                        }`}>
+                        <div
+                          className={`h-16 w-16 rounded-xl flex items-center justify-center border-2 ${
+                            unit.status === "occupied"
+                              ? "bg-emerald-50 border-emerald-200"
+                              : unit.status === "vacant"
+                              ? "bg-slate-50 border-slate-200"
+                              : "bg-amber-50 border-amber-200"
+                          }`}
+                        >
                           {getStatusIcon(unit.status)}
                         </div>
                       </div>
@@ -295,55 +333,94 @@ export default function ManageUnitsPage() {
                         {/* Header Row */}
                         <div className="flex items-start justify-between mb-4">
                           <div>
-                            <h3 className="text-xl font-semibold mb-1">Unit {unit.unit_number}</h3>
+                            <h3 className="text-xl font-semibold mb-1">
+                              Unit {unit.unit_number}
+                            </h3>
                             <div className="flex items-center gap-2 mb-2">
                               {getStatusBadge(unit.status)}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Link href={`/dashboard/building-management/manage-units/${unit.id}`}>
-                              <Button variant="outline" size="sm" className="text-[#7d51ff] border-[#7d51ff] hover:bg-[#7d51ff] hover:text-white">
+                            <Link
+                              href={`/dashboard/building-management/manage-units/${unit.id}`}
+                            >
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-[#7d51ff] border-[#7d51ff] hover:bg-[#7d51ff] hover:text-white"
+                              >
                                 <ArrowRight className="h-4 w-4 mr-1" />
                                 Details
                               </Button>
                             </Link>
                             <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" disabled={updateOccupancyMutation.isPending}>
-                                {updateOccupancyMutation.isPending ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <MoreHorizontal className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
-                              <DropdownMenuItem 
-                                onClick={() => handleStatusUpdate(unit.id, unit.unit_number, 'occupied')}
-                                disabled={unit.status === 'occupied' || updateOccupancyMutation.isPending}
-                                className="text-emerald-700 hover:bg-emerald-50 focus:bg-emerald-50"
-                              >
-                                <User className="h-4 w-4 mr-2 text-emerald-600" />
-                                Mark as Occupied
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleStatusUpdate(unit.id, unit.unit_number, 'vacant')}
-                                disabled={unit.status === 'vacant' || updateOccupancyMutation.isPending}
-                                className="text-slate-700 hover:bg-slate-50 focus:bg-slate-50"
-                              >
-                                <UserX className="h-4 w-4 mr-2 text-slate-600" />
-                                Mark as Vacant
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleStatusUpdate(unit.id, unit.unit_number, 'maintenance')}
-                                disabled={unit.status === 'maintenance' || updateOccupancyMutation.isPending}
-                                className="text-amber-700 hover:bg-amber-50 focus:bg-amber-50"
-                              >
-                                <Wrench className="h-4 w-4 mr-2 text-amber-600" />
-                                Mark for Maintenance
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  disabled={updateOccupancyMutation.isPending}
+                                >
+                                  {updateOccupancyMutation.isPending ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(
+                                      unit.id,
+                                      unit.unit_number,
+                                      "occupied"
+                                    )
+                                  }
+                                  disabled={
+                                    unit.status === "occupied" ||
+                                    updateOccupancyMutation.isPending
+                                  }
+                                  className="text-emerald-700 hover:bg-emerald-50 focus:bg-emerald-50"
+                                >
+                                  <User className="h-4 w-4 mr-2 text-emerald-600" />
+                                  Mark as Occupied
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(
+                                      unit.id,
+                                      unit.unit_number,
+                                      "vacant"
+                                    )
+                                  }
+                                  disabled={
+                                    unit.status === "vacant" ||
+                                    updateOccupancyMutation.isPending
+                                  }
+                                  className="text-slate-700 hover:bg-slate-50 focus:bg-slate-50"
+                                >
+                                  <UserX className="h-4 w-4 mr-2 text-slate-600" />
+                                  Mark as Vacant
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleStatusUpdate(
+                                      unit.id,
+                                      unit.unit_number,
+                                      "maintenance"
+                                    )
+                                  }
+                                  disabled={
+                                    unit.status === "maintenance" ||
+                                    updateOccupancyMutation.isPending
+                                  }
+                                  className="text-amber-700 hover:bg-amber-50 focus:bg-amber-50"
+                                >
+                                  <Wrench className="h-4 w-4 mr-2 text-amber-600" />
+                                  Mark for Maintenance
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
 
@@ -358,7 +435,9 @@ export default function ManageUnitsPage() {
                             <div className="space-y-1 text-sm">
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">Status:</span>
-                                <span className="capitalize">{unit.status}</span>
+                                <span className="capitalize">
+                                  {unit.status}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -374,7 +453,9 @@ export default function ManageUnitsPage() {
                                 <>
                                   <div className="flex items-center gap-2">
                                     <User className="h-3 w-3 text-muted-foreground" />
-                                    <span className="truncate">{unit.user_name}</span>
+                                    <span className="truncate">
+                                      {unit.user_name}
+                                    </span>
                                   </div>
                                   {unit.contact_no && (
                                     <div className="flex items-center gap-2">
@@ -384,7 +465,9 @@ export default function ManageUnitsPage() {
                                   )}
                                 </>
                               ) : (
-                                <span className="text-muted-foreground italic">No tenant assigned</span>
+                                <span className="text-muted-foreground italic">
+                                  No tenant assigned
+                                </span>
                               )}
                             </div>
                           </div>
@@ -394,14 +477,20 @@ export default function ManageUnitsPage() {
                         {unit.user_id && unit.photo_url && (
                           <div className="mt-4 pt-4 border-t">
                             <div className="flex items-center gap-3">
-                              <img
+                              <Image
                                 src={unit.photo_url}
                                 alt={unit.user_name}
+                                width={48}
+                                height={48}
                                 className="h-12 w-12 rounded-full object-cover border-2 border-muted"
                               />
                               <div>
-                                <p className="text-sm font-medium">{unit.user_name}</p>
-                                <p className="text-xs text-muted-foreground">Tenant Photo</p>
+                                <p className="text-sm font-medium">
+                                  {unit.user_name}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Tenant Photo
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -414,24 +503,26 @@ export default function ManageUnitsPage() {
             </div>
           )}
         </CardContent>
-        
+
         {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-6 py-4 border-t border-purple-200 bg-gradient-to-r from-purple-50/50 to-violet-50/50">
             <div className="text-sm text-gray-700 font-medium">
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredUnits.length)} of {filteredUnits.length} units
+              Showing {startIndex + 1} to{" "}
+              {Math.min(endIndex, filteredUnits.length)} of{" "}
+              {filteredUnits.length} units
             </div>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="border-purple-200 text-gray-700 hover:bg-purple-50 disabled:opacity-50"
               >
                 Previous
               </Button>
-              
+
               {/* Page Numbers */}
               <div className="flex items-center gap-1">
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -445,7 +536,7 @@ export default function ManageUnitsPage() {
                   } else {
                     pageNum = currentPage - 2 + i;
                   }
-                  
+
                   return (
                     <Button
                       key={pageNum}
@@ -453,8 +544,8 @@ export default function ManageUnitsPage() {
                       size="sm"
                       onClick={() => setCurrentPage(pageNum)}
                       className={`w-8 h-8 p-0 ${
-                        currentPage === pageNum 
-                          ? "bg-[#7d51ff] hover:bg-[#9d71ff] text-white" 
+                        currentPage === pageNum
+                          ? "bg-[#7d51ff] hover:bg-[#9d71ff] text-white"
                           : "border-purple-200 text-gray-700 hover:bg-purple-50"
                       }`}
                     >
@@ -463,11 +554,13 @@ export default function ManageUnitsPage() {
                   );
                 })}
               </div>
-              
+
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="border-purple-200 text-gray-700 hover:bg-purple-50 disabled:opacity-50"
               >

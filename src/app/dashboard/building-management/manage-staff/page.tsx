@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetBuildingStaff } from "@/hooks/api/building-management";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -63,11 +64,7 @@ export default function ManageStaffPage() {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -92,22 +89,19 @@ export default function ManageStaffPage() {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {department}
-          </Badge>
-        );
+        return <Badge variant="outline">{department}</Badge>;
     }
   };
-
-  
 
   if (error) {
     return (
       <div className="space-y-6">
         <div>
           <Button variant="ghost" size="sm" asChild>
-            <a href="/dashboard/building-management" className="flex items-center gap-2">
+            <a
+              href="/dashboard/building-management"
+              className="flex items-center gap-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               Back to Building Management
             </a>
@@ -116,9 +110,12 @@ export default function ManageStaffPage() {
         <Card className="border-destructive/50 bg-destructive/5">
           <CardContent className="p-6 text-center">
             <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-2" />
-            <h3 className="text-lg font-medium text-destructive mb-2">Failed to load staff data</h3>
+            <h3 className="text-lg font-medium text-destructive mb-2">
+              Failed to load staff data
+            </h3>
             <p className="text-muted-foreground mb-4">
-              There was an error loading the staff information. Please try again.
+              There was an error loading the staff information. Please try
+              again.
             </p>
             <Button onClick={() => refetch()} variant="outline">
               Try Again
@@ -133,8 +130,16 @@ export default function ManageStaffPage() {
     <div className="space-y-6">
       {/* Back Link */}
       <div>
-        <Button variant="ghost" size="sm" asChild className="text-gray-800 hover:text-gray-900 hover:bg-purple-50">
-          <a href="/dashboard/building-management" className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="text-gray-800 hover:text-gray-900 hover:bg-purple-50"
+        >
+          <a
+            href="/dashboard/building-management"
+            className="flex items-center gap-2"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Building Management
           </a>
@@ -147,7 +152,9 @@ export default function ManageStaffPage() {
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
         <div className="relative">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Manage Staff</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
+            Manage Staff
+          </h1>
           <p className="text-purple-100 text-lg">
             Manage building staff members, roles, and permissions.
           </p>
@@ -187,12 +194,16 @@ export default function ManageStaffPage() {
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <span className="ml-2 text-muted-foreground">Loading staff...</span>
+              <span className="ml-2 text-muted-foreground">
+                Loading staff...
+              </span>
             </div>
           ) : staff.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No staff members found</h3>
+              <h3 className="text-lg font-medium mb-2">
+                No staff members found
+              </h3>
               <p className="text-muted-foreground mb-4">
                 Get started by adding your first staff member to the building.
               </p>
@@ -204,15 +215,20 @@ export default function ManageStaffPage() {
           ) : (
             <div className="space-y-6">
               {staff.map((member) => (
-                <Card key={member.staff_id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={member.staff_id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-6">
                       {/* Avatar Section */}
                       <div className="flex-shrink-0">
                         {member.profile_image_url ? (
-                          <img
+                          <Image
                             src={member.profile_image_url}
                             alt={member.full_name}
+                            width={64}
+                            height={64}
                             className="h-16 w-16 rounded-full object-cover border-2 border-muted"
                           />
                         ) : (
@@ -227,7 +243,9 @@ export default function ManageStaffPage() {
                         {/* Header Row */}
                         <div className="flex items-start justify-between mb-4">
                           <div>
-                            <h3 className="text-xl font-semibold mb-1">{member.full_name}</h3>
+                            <h3 className="text-xl font-semibold mb-1">
+                              {member.full_name}
+                            </h3>
                             <div className="flex items-center gap-2 mb-2">
                               <Badge variant="outline" className="text-sm">
                                 {member.role_name}
@@ -237,25 +255,31 @@ export default function ManageStaffPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Link href={`/dashboard/building-management/manage-staff/${member.staff_id}/history`}>
-                              <Button variant="outline" size="sm" className="text-purple-600 border-purple-200 hover:bg-purple-50">
+                            <Link
+                              href={`/dashboard/building-management/manage-staff/${member.staff_id}/history`}
+                            >
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                              >
                                 <History className="h-4 w-4 mr-2" />
                                 History
                               </Button>
                             </Link>
                             <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <User className="h-4 w-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem>
+                                  <User className="h-4 w-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
 
@@ -300,7 +324,12 @@ export default function ManageStaffPage() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-3 w-3 text-muted-foreground" />
-                                <span>Hired: {member.hire_date !== '0000-00-00' ? member.hire_date : 'Not set'}</span>
+                                <span>
+                                  Hired:{" "}
+                                  {member.hire_date !== "0000-00-00"
+                                    ? member.hire_date
+                                    : "Not set"}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -321,16 +350,20 @@ export default function ManageStaffPage() {
                                   {member.emergency_contact_phone && (
                                     <div className="flex items-center gap-2">
                                       <Phone className="h-3 w-3 text-muted-foreground" />
-                                      <span>{member.emergency_contact_phone}</span>
+                                      <span>
+                                        {member.emergency_contact_phone}
+                                      </span>
                                     </div>
                                   )}
                                 </>
                               ) : (
-                                <span className="text-muted-foreground italic">No emergency contact set</span>
+                                <span className="text-muted-foreground italic">
+                                  No emergency contact set
+                                </span>
                               )}
                             </div>
                           </div>
-                                                </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

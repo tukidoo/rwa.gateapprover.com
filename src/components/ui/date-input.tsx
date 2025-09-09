@@ -59,9 +59,6 @@ const DateInput = React.forwardRef<HTMLInputElement, DateInputProps>(
       // Adjust cursor position for added slashes
       if (cursorPos !== undefined) {
         const originalInput = input;
-        const slashesBeforeCursor = (
-          originalInput.slice(0, cursorPos).match(/\//g) || []
-        ).length;
         const numbersBeforeCursor = originalInput
           .slice(0, cursorPos)
           .replace(/\D/g, "").length;

@@ -251,7 +251,7 @@ const NewNoticePage = () => {
             <FormField
               control={form.control}
               name="target_units"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Target Units</FormLabel>
                   <div className="flex flex-col gap-2">
@@ -295,7 +295,7 @@ const NewNoticePage = () => {
             <FormField
               control={form.control}
               name="target_floors"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Target Floors</FormLabel>
                   <div className="flex flex-col gap-2">

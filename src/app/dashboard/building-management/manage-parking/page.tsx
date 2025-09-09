@@ -21,7 +21,6 @@ import {
   Car,
   Plus,
   Search,
-  Filter,
   MoreHorizontal,
   Edit,
   Trash2,
@@ -29,14 +28,11 @@ import {
   ArrowLeft,
   MapPin,
   Hash,
-  Building,
-  Calendar,
   Settings,
   AlertCircle,
   CheckCircle2,
   Clock,
   User,
-  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,30 +50,27 @@ export default function ManageParkingPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const {
-    data: parkingsData,
-    isLoading,
-    error,
-  } = useGetBuildingParkings();
+  const { data: parkingsData, isLoading, error } = useGetBuildingParkings();
 
   const filteredParkings = useMemo(() => {
     const parkings = parkingsData?.data?.data || parkingsData?.data || [];
     if (!Array.isArray(parkings)) return [];
-    
+
     return parkings.filter((parking) => {
       const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = (
-        (parking.slot_number?.toLowerCase() || '').includes(searchLower) ||
-        (parking.zone_name_zone_type?.toLowerCase() || '').includes(searchLower) ||
-        (parking.floor_level?.toLowerCase() || '').includes(searchLower) ||
-        (parking.name?.toLowerCase() || '').includes(searchLower) ||
-        (parking.unit_number?.toLowerCase() || '').includes(searchLower) ||
-        (parking.vehicle_number?.toLowerCase() || '').includes(searchLower) ||
-        (parking.vehicle_make?.toLowerCase() || '').includes(searchLower) ||
-        (parking.vehicle_model?.toLowerCase() || '').includes(searchLower) ||
-        (parking.vehicle_color?.toLowerCase() || '').includes(searchLower)
-      );
-      
+      const matchesSearch =
+        (parking.slot_number?.toLowerCase() || "").includes(searchLower) ||
+        (parking.zone_name_zone_type?.toLowerCase() || "").includes(
+          searchLower
+        ) ||
+        (parking.floor_level?.toLowerCase() || "").includes(searchLower) ||
+        (parking.name?.toLowerCase() || "").includes(searchLower) ||
+        (parking.unit_number?.toLowerCase() || "").includes(searchLower) ||
+        (parking.vehicle_number?.toLowerCase() || "").includes(searchLower) ||
+        (parking.vehicle_make?.toLowerCase() || "").includes(searchLower) ||
+        (parking.vehicle_model?.toLowerCase() || "").includes(searchLower) ||
+        (parking.vehicle_color?.toLowerCase() || "").includes(searchLower);
+
       return matchesSearch;
     });
   }, [parkingsData, searchQuery]);
@@ -95,7 +88,7 @@ export default function ManageParkingPage() {
 
   const getStatusBadge = (status: string | null) => {
     if (!status) return <Badge variant="outline">-</Badge>;
-    
+
     switch (status.toLowerCase()) {
       case "occupied":
         return (
@@ -119,17 +112,13 @@ export default function ManageParkingPage() {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const getAllocationBadge = (allocationType: string | null) => {
     if (!allocationType) return <Badge variant="outline">-</Badge>;
-    
+
     switch (allocationType.toLowerCase()) {
       case "permanent":
         return (
@@ -150,11 +139,7 @@ export default function ManageParkingPage() {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {allocationType}
-          </Badge>
-        );
+        return <Badge variant="outline">{allocationType}</Badge>;
     }
   };
 
@@ -246,12 +231,16 @@ export default function ManageParkingPage() {
   }
 
   // Debug API response structure
-  console.log('Parkings Data:', parkingsData);
-  
+  console.log("Parkings Data:", parkingsData);
+
   const parkings = parkingsData?.data?.data || parkingsData?.data || [];
   const totalSlots = Array.isArray(parkings) ? parkings.length : 0;
-  const occupiedSlots = Array.isArray(parkings) ? parkings.filter(p => p.status === 'occupied').length : 0;
-  const availableSlots = Array.isArray(parkings) ? parkings.filter(p => p.status === 'available').length : 0;
+  const occupiedSlots = Array.isArray(parkings)
+    ? parkings.filter((p) => p.status === "occupied").length
+    : 0;
+  const availableSlots = Array.isArray(parkings)
+    ? parkings.filter((p) => p.status === "available").length
+    : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
@@ -265,7 +254,11 @@ export default function ManageParkingPage() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   <Link href="/dashboard/building-management">
-                    <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-white hover:bg-white/20"
+                    >
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Back to Building Management
                     </Button>
@@ -296,7 +289,9 @@ export default function ManageParkingPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">Total Slots</p>
+                  <p className="text-purple-100 text-sm font-medium">
+                    Total Slots
+                  </p>
                   <p className="text-3xl font-bold">{totalSlots}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -324,7 +319,9 @@ export default function ManageParkingPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Available</p>
+                  <p className="text-green-100 text-sm font-medium">
+                    Available
+                  </p>
                   <p className="text-3xl font-bold">{availableSlots}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -349,7 +346,8 @@ export default function ManageParkingPage() {
                 />
                 {searchQuery && (
                   <div className="text-sm text-gray-500 mt-1">
-                    {filteredParkings.length} slot{filteredParkings.length !== 1 ? 's' : ''} found
+                    {filteredParkings.length} slot
+                    {filteredParkings.length !== 1 ? "s" : ""} found
                   </div>
                 )}
               </div>
@@ -358,7 +356,10 @@ export default function ManageParkingPage() {
                   <Plus className="h-4 w-4 mr-2" />
                   Add Parking Slot
                 </Button>
-                <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+                <Button
+                  variant="outline"
+                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </Button>
@@ -375,7 +376,8 @@ export default function ManageParkingPage() {
               Parking Slots
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Showing {paginatedParkings.length} of {filteredParkings.length} slots
+              Showing {paginatedParkings.length} of {filteredParkings.length}{" "}
+              slots
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -383,13 +385,27 @@ export default function ManageParkingPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold text-gray-700">Slot Details</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Resident</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Vehicle</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Location</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Allocation</TableHead>
-                    <TableHead className="font-semibold text-gray-700 text-center">Actions</TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Slot Details
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Resident
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Vehicle
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Location
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Status
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Allocation
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700 text-center">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -405,9 +421,9 @@ export default function ManageParkingPage() {
                               No parking slots found
                             </p>
                             <p className="text-sm text-gray-500">
-                              {searchQuery 
-                                ? 'Try adjusting your search criteria' 
-                                : 'Get started by adding parking slots to your building'}
+                              {searchQuery
+                                ? "Try adjusting your search criteria"
+                                : "Get started by adding parking slots to your building"}
                             </p>
                           </div>
                         </div>
@@ -426,10 +442,10 @@ export default function ManageParkingPage() {
                             </div>
                             <div>
                               <div className="text-sm font-medium text-gray-900">
-                                {parking.slot_number || '-'}
+                                {parking.slot_number || "-"}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {parking.floor_level || '-'}
+                                {parking.floor_level || "-"}
                               </div>
                             </div>
                           </div>
@@ -443,10 +459,10 @@ export default function ManageParkingPage() {
                             </div>
                             <div>
                               <div className="text-sm font-medium text-gray-900">
-                                {parking.name || '-'}
+                                {parking.name || "-"}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {parking.unit_number || '-'}
+                                {parking.unit_number || "-"}
                               </div>
                             </div>
                           </div>
@@ -454,22 +470,22 @@ export default function ManageParkingPage() {
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-1">
                             <div className="text-sm font-medium text-gray-900">
-                              {parking.vehicle_number || '-'}
+                              {parking.vehicle_number || "-"}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {parking.vehicle_make && parking.vehicle_model 
-                                ? `${parking.vehicle_make} ${parking.vehicle_model}` 
-                                : '-'}
+                              {parking.vehicle_make && parking.vehicle_model
+                                ? `${parking.vehicle_make} ${parking.vehicle_model}`
+                                : "-"}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {parking.vehicle_color || '-'}
+                              {parking.vehicle_color || "-"}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center text-sm text-gray-900">
                             <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                            {parking.zone_name_zone_type || '-'}
+                            {parking.zone_name_zone_type || "-"}
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
@@ -515,7 +531,7 @@ export default function ManageParkingPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >
@@ -544,7 +560,9 @@ export default function ManageParkingPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >

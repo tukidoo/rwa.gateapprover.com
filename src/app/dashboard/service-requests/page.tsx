@@ -4,7 +4,13 @@ import { useState, useMemo } from "react";
 import { useGetAllServiceRequests } from "@/hooks/api/service-requests";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,14 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  SERVICE_REQUEST_PRIORITY,
-  SERVICE_REQUEST_STATUS,
-} from "@/constants/service-request";
-import { TServiceRequest } from "@/types/models/service-request";
-import {
   AlertCircle,
   Clock,
-  User,
   CheckCircle2,
   Clipboard,
   Search,
@@ -40,15 +40,12 @@ import {
   Edit,
   Eye,
   ArrowLeft,
-  MapPin,
   Hash,
   Building,
   Calendar,
   Settings,
   Wrench,
   Home,
-  Phone,
-  Mail,
   Filter,
   Zap,
   Droplets,
@@ -65,8 +62,6 @@ import {
   Cog,
 } from "lucide-react";
 import Image from "next/image";
-import { format } from "date-fns";
-import { Pagination } from "@/components/ui/pagination-with-query-params";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -75,6 +70,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
 
 export default function ServiceRequestPage() {
   const router = useRouter();
@@ -93,24 +89,30 @@ export default function ServiceRequestPage() {
 
   const filteredRequests = useMemo(() => {
     if (!serviceRequests?.data?.requests) return [];
-    
+
     return serviceRequests.data.requests.filter((request) => {
       const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = (
-        (request.ticket_number?.toLowerCase() || '').includes(searchLower) ||
-        (request.title?.toLowerCase() || '').includes(searchLower) ||
-        (request.requester_name?.toLowerCase() || '').includes(searchLower) ||
-        (request.category_name?.toLowerCase() || '').includes(searchLower) ||
-        (request.unit_number?.toLowerCase() || '').includes(searchLower) ||
-        (request.building_name?.toLowerCase() || '').includes(searchLower)
-      );
-      
-      const matchesStatus = statusFilter === "all" || request.status === statusFilter;
-      const matchesPriority = priorityFilter === "all" || request.priority === priorityFilter;
-      
+      const matchesSearch =
+        (request.ticket_number?.toLowerCase() || "").includes(searchLower) ||
+        (request.title?.toLowerCase() || "").includes(searchLower) ||
+        (request.requester_name?.toLowerCase() || "").includes(searchLower) ||
+        (request.category_name?.toLowerCase() || "").includes(searchLower) ||
+        (request.unit_number?.toLowerCase() || "").includes(searchLower) ||
+        (request.building_name?.toLowerCase() || "").includes(searchLower);
+
+      const matchesStatus =
+        statusFilter === "all" || request.status === statusFilter;
+      const matchesPriority =
+        priorityFilter === "all" || request.priority === priorityFilter;
+
       return matchesSearch && matchesStatus && matchesPriority;
     });
-  }, [serviceRequests?.data?.requests, searchQuery, statusFilter, priorityFilter]);
+  }, [
+    serviceRequests?.data?.requests,
+    searchQuery,
+    statusFilter,
+    priorityFilter,
+  ]);
 
   const paginatedRequests = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -122,85 +124,169 @@ export default function ServiceRequestPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "open":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Open</Badge>;
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+            Open
+          </Badge>
+        );
       case "in_progress":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">In Progress</Badge>;
+        return (
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+            In Progress
+          </Badge>
+        );
       case "pending_approval":
-        return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">Pending Approval</Badge>;
+        return (
+          <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">
+            Pending Approval
+          </Badge>
+        );
       case "resolved":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Resolved</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+            Resolved
+          </Badge>
+        );
       case "closed":
-        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">Closed</Badge>;
+        return (
+          <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">
+            Closed
+          </Badge>
+        );
       case "cancelled":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Cancelled</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+            Cancelled
+          </Badge>
+        );
       default:
-        return <Badge variant="secondary">{status || '-'}</Badge>;
+        return <Badge variant="secondary">{status || "-"}</Badge>;
     }
   };
 
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
       case "high":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">High</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+            High
+          </Badge>
+        );
       case "medium":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Medium</Badge>;
+        return (
+          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+            Medium
+          </Badge>
+        );
       case "low":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Low</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+            Low
+          </Badge>
+        );
       default:
-        return <Badge variant="secondary">{priority || '-'}</Badge>;
+        return <Badge variant="secondary">{priority || "-"}</Badge>;
     }
-  };
-
-  const getInitials = (name: string | null) => {
-    if (!name) return '-';
-    return name.split(' ').map(n => n.charAt(0)).join('').toUpperCase();
   };
 
   const getCategoryIcon = (categoryName: string | null) => {
     if (!categoryName) return <Wrench className="h-5 w-5 text-gray-400" />;
-    
+
     const category = categoryName.toLowerCase();
-    
-    if (category.includes('electrical') || category.includes('electric') || category.includes('power')) {
+
+    if (
+      category.includes("electrical") ||
+      category.includes("electric") ||
+      category.includes("power")
+    ) {
       return <Zap className="h-5 w-5 text-yellow-600" />;
     }
-    if (category.includes('plumbing') || category.includes('water') || category.includes('pipe')) {
+    if (
+      category.includes("plumbing") ||
+      category.includes("water") ||
+      category.includes("pipe")
+    ) {
       return <Droplets className="h-5 w-5 text-blue-600" />;
     }
-    if (category.includes('security') || category.includes('safety') || category.includes('cctv')) {
+    if (
+      category.includes("security") ||
+      category.includes("safety") ||
+      category.includes("cctv")
+    ) {
       return <Shield className="h-5 w-5 text-red-600" />;
     }
-    if (category.includes('cleaning') || category.includes('sanitation') || category.includes('waste')) {
+    if (
+      category.includes("cleaning") ||
+      category.includes("sanitation") ||
+      category.includes("waste")
+    ) {
       return <Trash2 className="h-5 w-5 text-green-600" />;
     }
-    if (category.includes('internet') || category.includes('wifi') || category.includes('network')) {
+    if (
+      category.includes("internet") ||
+      category.includes("wifi") ||
+      category.includes("network")
+    ) {
       return <Wifi className="h-5 w-5 text-purple-600" />;
     }
-    if (category.includes('parking') || category.includes('vehicle') || category.includes('garage')) {
+    if (
+      category.includes("parking") ||
+      category.includes("vehicle") ||
+      category.includes("garage")
+    ) {
       return <Car className="h-5 w-5 text-gray-600" />;
     }
-    if (category.includes('door') || category.includes('lock') || category.includes('access')) {
+    if (
+      category.includes("door") ||
+      category.includes("lock") ||
+      category.includes("access")
+    ) {
       return <Lock className="h-5 w-5 text-orange-600" />;
     }
-    if (category.includes('light') || category.includes('lamp') || category.includes('bulb')) {
+    if (
+      category.includes("light") ||
+      category.includes("lamp") ||
+      category.includes("bulb")
+    ) {
       return <Lightbulb className="h-5 w-5 text-yellow-500" />;
     }
-    if (category.includes('hvac') || category.includes('air') || category.includes('heating') || category.includes('cooling')) {
+    if (
+      category.includes("hvac") ||
+      category.includes("air") ||
+      category.includes("heating") ||
+      category.includes("cooling")
+    ) {
       return <Thermometer className="h-5 w-5 text-cyan-600" />;
     }
-    if (category.includes('camera') || category.includes('surveillance') || category.includes('monitoring')) {
+    if (
+      category.includes("camera") ||
+      category.includes("surveillance") ||
+      category.includes("monitoring")
+    ) {
       return <Camera className="h-5 w-5 text-indigo-600" />;
     }
-    if (category.includes('key') || category.includes('access') || category.includes('card')) {
+    if (
+      category.includes("key") ||
+      category.includes("access") ||
+      category.includes("card")
+    ) {
       return <Key className="h-5 w-5 text-amber-600" />;
     }
-    if (category.includes('maintenance') || category.includes('repair') || category.includes('fix')) {
+    if (
+      category.includes("maintenance") ||
+      category.includes("repair") ||
+      category.includes("fix")
+    ) {
       return <Hammer className="h-5 w-5 text-slate-600" />;
     }
-    if (category.includes('general') || category.includes('other') || category.includes('misc')) {
+    if (
+      category.includes("general") ||
+      category.includes("other") ||
+      category.includes("misc")
+    ) {
       return <Cog className="h-5 w-5 text-gray-600" />;
     }
-    
+
     // Default fallback
     return <Wrench className="h-5 w-5 text-gray-400" />;
   };
@@ -227,8 +313,14 @@ export default function ServiceRequestPage() {
   }
 
   const totalRequests = serviceRequests?.data?.requests.length || 0;
-  const pendingRequests = serviceRequests?.data?.requests.filter(r => r.status === 'open' || r.status === 'pending_approval').length || 0;
-  const completedRequests = serviceRequests?.data?.requests.filter(r => r.status === 'resolved' || r.status === 'closed').length || 0;
+  const pendingRequests =
+    serviceRequests?.data?.requests.filter(
+      (r) => r.status === "open" || r.status === "pending_approval"
+    ).length || 0;
+  const completedRequests =
+    serviceRequests?.data?.requests.filter(
+      (r) => r.status === "resolved" || r.status === "closed"
+    ).length || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
@@ -242,7 +334,11 @@ export default function ServiceRequestPage() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   <Link href="/dashboard">
-                    <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-white hover:bg-white/20"
+                    >
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Back to Dashboard
                     </Button>
@@ -273,7 +369,9 @@ export default function ServiceRequestPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">Total Requests</p>
+                  <p className="text-purple-100 text-sm font-medium">
+                    Total Requests
+                  </p>
                   <p className="text-3xl font-bold">{totalRequests}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -301,7 +399,9 @@ export default function ServiceRequestPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Completed</p>
+                  <p className="text-green-100 text-sm font-medium">
+                    Completed
+                  </p>
                   <p className="text-3xl font-bold">{completedRequests}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -335,13 +435,18 @@ export default function ServiceRequestPage() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="open">Open</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="pending_approval">Pending Approval</SelectItem>
+                    <SelectItem value="pending_approval">
+                      Pending Approval
+                    </SelectItem>
                     <SelectItem value="resolved">Resolved</SelectItem>
                     <SelectItem value="closed">Closed</SelectItem>
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
-                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                <Select
+                  value={priorityFilter}
+                  onValueChange={setPriorityFilter}
+                >
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="Priority" />
                   </SelectTrigger>
@@ -356,7 +461,10 @@ export default function ServiceRequestPage() {
                   <Plus className="h-4 w-4 mr-2" />
                   New Request
                 </Button>
-                <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+                <Button
+                  variant="outline"
+                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </Button>
@@ -373,7 +481,8 @@ export default function ServiceRequestPage() {
               Service Requests
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Showing {paginatedRequests.length} of {filteredRequests.length} requests
+              Showing {paginatedRequests.length} of {filteredRequests.length}{" "}
+              requests
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -381,14 +490,30 @@ export default function ServiceRequestPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold text-gray-700">Ticket Details</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Requester</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Category</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Priority</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Location</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Created</TableHead>
-                    <TableHead className="font-semibold text-gray-700 text-center">Actions</TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Ticket Details
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Requester
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Category
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Priority
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Status
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Location
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Created
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700 text-center">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -404,9 +529,11 @@ export default function ServiceRequestPage() {
                               No service requests found
                             </p>
                             <p className="text-sm text-gray-500">
-                              {searchQuery || statusFilter !== "all" || priorityFilter !== "all" 
-                                ? 'Try adjusting your search criteria' 
-                                : 'New requests will appear here'}
+                              {searchQuery ||
+                              statusFilter !== "all" ||
+                              priorityFilter !== "all"
+                                ? "Try adjusting your search criteria"
+                                : "New requests will appear here"}
                             </p>
                           </div>
                         </div>
@@ -425,19 +552,21 @@ export default function ServiceRequestPage() {
                             </div>
                             <div>
                               <div className="text-sm font-medium text-gray-900 font-mono">
-                                {request.ticket_number || '-'}
+                                {request.ticket_number || "-"}
                               </div>
-                              <div className="text-sm text-gray-500">Ticket ID</div>
+                              <div className="text-sm text-gray-500">
+                                Ticket ID
+                              </div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-1">
                             <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                              {request.title || '-'}
+                              {request.title || "-"}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {request.requester_name || '-'}
+                              {request.requester_name || "-"}
                             </div>
                           </div>
                         </TableCell>
@@ -454,43 +583,56 @@ export default function ServiceRequestPage() {
                             ) : (
                               getCategoryIcon(request.category_name || null)
                             )}
-                            <span className="text-sm text-gray-900">{request.category_name || '-'}</span>
+                            <span className="text-sm text-gray-900">
+                              {request.category_name || "-"}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
-                          {getPriorityBadge(request.priority || '')}
+                          {getPriorityBadge(request.priority || "")}
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
-                          {getStatusBadge(request.status || '')}
+                          {getStatusBadge(request.status || "")}
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-1">
                             <div className="flex items-center text-sm text-gray-900">
                               <Home className="h-4 w-4 mr-2 text-gray-400" />
-                              Unit {request.unit_number || '-'}
+                              Unit {request.unit_number || "-"}
                             </div>
                             <div className="flex items-center text-sm text-gray-500">
                               <Building className="h-4 w-4 mr-2 text-gray-400" />
-                              Floor {request.floor_number || '-'}, {request.building_name || '-'}
+                              Floor {request.floor_number || "-"},{" "}
+                              {request.building_name || "-"}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center text-sm text-gray-900">
                             <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                            {request.created_at ? format(request.created_at, "MMM dd, yyyy") : '-'}
+                            {request.created_at
+                              ? format(request.created_at, "MMM dd, yyyy")
+                              : "-"}
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap text-center">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                              >
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                                onClick={() => router.push(`/dashboard/service-requests/${request.id}`)}
+                                onClick={() =>
+                                  router.push(
+                                    `/dashboard/service-requests/${request.id}`
+                                  )
+                                }
                                 className="cursor-pointer"
                               >
                                 <Eye className="h-4 w-4 mr-2" />
@@ -519,7 +661,7 @@ export default function ServiceRequestPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >
@@ -548,7 +690,9 @@ export default function ServiceRequestPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >

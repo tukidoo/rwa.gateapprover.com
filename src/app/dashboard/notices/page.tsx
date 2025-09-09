@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useGetAllNotices, useGetNoticeAnalytics, usePublishNotice, useArchiveNotice, useDeleteNotice } from "@/hooks/api/notice";
+import {
+  useGetAllNotices,
+  useGetNoticeAnalytics,
+  usePublishNotice,
+  useArchiveNotice,
+  useDeleteNotice,
+} from "@/hooks/api/notice";
 import {
   Table,
   TableBody,
@@ -26,30 +32,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Loader2,
   MoreHorizontal,
-  Pin,
   Trash2,
   Plus,
   Eye,
-  TrendingUp,
-  BarChart3,
-  Activity,
   Archive,
-  XCircle,
   Globe,
   FileText,
   Search,
   ArrowLeft,
   Calendar,
   User,
-  Hash,
-  Building,
   Settings,
   Filter,
   AlertCircle,
-  CheckCircle2,
-  Clock,
   Edit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -87,12 +83,7 @@ export default function NoticesPage() {
     }
   );
 
-  const {
-    data: noticeAnalytics,
-    isLoading: isNoticeAnalyticsLoading,
-    isError: isNoticeAnalyticsError,
-    refetch: refetchAnalytics,
-  } = useGetNoticeAnalytics();
+  const { refetch: refetchAnalytics } = useGetNoticeAnalytics();
 
   const publishNoticeMutation = usePublishNotice({
     onSuccess: () => {
@@ -166,11 +157,7 @@ export default function NoticesPage() {
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -180,18 +167,16 @@ export default function NoticesPage() {
 
   const filteredNotices = useMemo(() => {
     if (!noticesData?.data?.notices) return [];
-    
+
     return noticesData.data.notices.filter((notice) => {
       const searchLower = searchQuery.toLowerCase();
-      const matchesSearch = (
-        (notice.title?.toLowerCase() || '').includes(searchLower) ||
-        (notice.content?.toLowerCase() || '').includes(searchLower) ||
-        (notice.author_name?.toLowerCase() || '').includes(searchLower) ||
-        (notice.category?.toLowerCase() || '').includes(searchLower)
-      );
-      
-      const matchesStatus = statusFilter === "all" || notice.status === statusFilter;
-      
+      const matchesSearch =
+        (notice.title?.toLowerCase() || "").includes(searchLower) ||
+        (notice.content?.toLowerCase() || "").includes(searchLower);
+
+      const matchesStatus =
+        statusFilter === "all" || notice.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
   }, [noticesData?.data?.notices, searchQuery, statusFilter]);
@@ -286,8 +271,11 @@ export default function NoticesPage() {
   }
 
   const totalNotices = noticesData?.data?.notices.length || 0;
-  const publishedNotices = noticesData?.data?.notices.filter(n => n.status === 'published').length || 0;
-  const draftNotices = noticesData?.data?.notices.filter(n => n.status === 'draft').length || 0;
+  const publishedNotices =
+    noticesData?.data?.notices.filter((n) => n.status === "published").length ||
+    0;
+  const draftNotices =
+    noticesData?.data?.notices.filter((n) => n.status === "draft").length || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
@@ -301,7 +289,11 @@ export default function NoticesPage() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   <Link href="/dashboard">
-                    <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-white hover:bg-white/20"
+                    >
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Back to Dashboard
                     </Button>
@@ -332,7 +324,9 @@ export default function NoticesPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">Total Notices</p>
+                  <p className="text-purple-100 text-sm font-medium">
+                    Total Notices
+                  </p>
                   <p className="text-3xl font-bold">{totalNotices}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -346,7 +340,9 @@ export default function NoticesPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">Published</p>
+                  <p className="text-green-100 text-sm font-medium">
+                    Published
+                  </p>
                   <p className="text-3xl font-bold">{publishedNotices}</p>
                 </div>
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -401,7 +397,10 @@ export default function NoticesPage() {
                   <Plus className="h-4 w-4 mr-2" />
                   New Notice
                 </Button>
-                <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+                <Button
+                  variant="outline"
+                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </Button>
@@ -418,7 +417,8 @@ export default function NoticesPage() {
               Notices
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Showing {paginatedNotices.length} of {filteredNotices.length} notices
+              Showing {paginatedNotices.length} of {filteredNotices.length}{" "}
+              notices
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -426,13 +426,24 @@ export default function NoticesPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="font-semibold text-gray-700">Notice Details</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Author</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Category</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Status</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Priority</TableHead>
-                    <TableHead className="font-semibold text-gray-700">Created</TableHead>
-                    <TableHead className="font-semibold text-gray-700 text-center">Actions</TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Notice Details
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Category
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Status
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Priority
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700">
+                      Created
+                    </TableHead>
+                    <TableHead className="font-semibold text-gray-700 text-center">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -448,9 +459,9 @@ export default function NoticesPage() {
                               No notices found
                             </p>
                             <p className="text-sm text-gray-500">
-                              {searchQuery || statusFilter !== "all" 
-                                ? 'Try adjusting your search criteria' 
-                                : 'Get started by creating your first notice'}
+                              {searchQuery || statusFilter !== "all"
+                                ? "Try adjusting your search criteria"
+                                : "Get started by creating your first notice"}
                             </p>
                           </div>
                         </div>
@@ -469,40 +480,42 @@ export default function NoticesPage() {
                             </div>
                             <div>
                               <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                                {notice.title || '-'}
+                                {notice.title || "-"}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {notice.content ? `${notice.content.substring(0, 50)}...` : '-'}
+                                {notice.content
+                                  ? `${notice.content.substring(0, 50)}...`
+                                  : "-"}
                               </div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center text-sm text-gray-900">
-                            <User className="h-4 w-4 mr-2 text-gray-400" />
-                            {notice.author_name || '-'}
-                          </div>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 whitespace-nowrap">
                           <Badge variant="outline" className="text-xs">
-                            {notice.category || '-'}
+                            {notice.category_name || "-"}
                           </Badge>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           {getStatusBadge(notice.status)}
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
-                          <Badge 
-                            variant={notice.priority === 'high' ? 'destructive' : 'secondary'}
+                          <Badge
+                            variant={
+                              notice.priority === "high"
+                                ? "destructive"
+                                : "secondary"
+                            }
                             className="text-xs"
                           >
-                            {notice.priority || '-'}
+                            {notice.priority || "-"}
                           </Badge>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center text-sm text-gray-900">
                             <Calendar className="h-4 w-4 mr-2 text-gray-400" />
-                            {notice.created_at ? format(notice.created_at, "MMM dd, yyyy") : '-'}
+                            {notice.created_at
+                              ? format(notice.created_at, "MMM dd, yyyy")
+                              : "-"}
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-4 whitespace-nowrap text-center">
@@ -512,44 +525,56 @@ export default function NoticesPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
-                                onClick={() => router.push(`/dashboard/notices/${notice.id}`)}
+                                onClick={() =>
+                                  router.push(`/dashboard/notices/${notice.id}`)
+                                }
                                 className="cursor-pointer"
                               >
                                 <Eye className="h-4 w-4 mr-2" />
                                 View Details
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => router.push(`/dashboard/notices/${notice.id}/edit`)}
+                                onClick={() =>
+                                  router.push(
+                                    `/dashboard/notices/${notice.id}/edit`
+                                  )
+                                }
                                 className="cursor-pointer"
                               >
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit Notice
                               </DropdownMenuItem>
                               {canPublish(notice.status) && (
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => handlePublish(notice.id)}
                                   disabled={publishNoticeMutation.isPending}
                                 >
                                   <Globe className="h-4 w-4 mr-2" />
-                                  {publishNoticeMutation.isPending ? "Publishing..." : "Publish"}
+                                  {publishNoticeMutation.isPending
+                                    ? "Publishing..."
+                                    : "Publish"}
                                 </DropdownMenuItem>
                               )}
                               {canArchive(notice.status) && (
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => handleArchive(notice.id)}
                                   disabled={archiveNoticeMutation.isPending}
                                 >
                                   <Archive className="h-4 w-4 mr-2" />
-                                  {archiveNoticeMutation.isPending ? "Archiving..." : "Archive"}
+                                  {archiveNoticeMutation.isPending
+                                    ? "Archiving..."
+                                    : "Archive"}
                                 </DropdownMenuItem>
                               )}
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleDelete(notice.id)}
                                 disabled={deleteNoticeMutation.isPending}
                                 className="text-red-600"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
-                                {deleteNoticeMutation.isPending ? "Deleting..." : "Delete"}
+                                {deleteNoticeMutation.isPending
+                                  ? "Deleting..."
+                                  : "Delete"}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -570,7 +595,7 @@ export default function NoticesPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >
@@ -599,7 +624,9 @@ export default function NoticesPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="border-purple-200 text-purple-700 hover:bg-purple-50"
               >
