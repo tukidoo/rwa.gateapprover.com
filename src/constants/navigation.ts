@@ -1,7 +1,15 @@
 export const MAIN_NAVIGATION = [
   {
+    label: "Building Management",
+    href: "/dashboard/building-management",
+  },
+  {
     label: "Notices",
     href: "/dashboard/notices",
+  },
+  {
+    label: "Move-in/Move-out Requests",
+    href: "/dashboard/move-requests",
   },
   {
     label: "Amenities",
@@ -22,6 +30,10 @@ export const MAIN_NAVIGATION = [
   {
     label: "Tenant Onboarding",
     href: "/dashboard/tenant-onboarding",
+  },
+  {
+    label: "Parking Management",
+    href: "/dashboard/parking-management",
   },
 ];
 

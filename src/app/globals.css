@@ -56,7 +56,7 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: rgba(254, 254, 254, 0.8);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -68,13 +68,13 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar: #7d5fff;
+  --sidebar-foreground: #FEFEFE;
   --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-primary-foreground: #FEFEFE;
+  --sidebar-accent: rgba(254, 254, 254, 0.15);
+  --sidebar-accent-foreground: #FEFEFE;
+  --sidebar-border: rgba(125, 95, 255, 0.3);
   --sidebar-ring: oklch(0.708 0 0);
 }
 
@@ -90,7 +90,7 @@
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  --muted-foreground: rgba(254, 254, 254, 0.8);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
@@ -102,13 +102,13 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: #7d5fff;
+  --sidebar-foreground: #FEFEFE;
   --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-primary-foreground: #FEFEFE;
+  --sidebar-accent: rgba(254, 254, 254, 0.2);
+  --sidebar-accent-foreground: #FEFEFE;
+  --sidebar-border: rgba(125, 95, 255, 0.4);
   --sidebar-ring: oklch(0.556 0 0);
 }
 
@@ -118,5 +118,206 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+  }
+  
+  .animate-pulse-hover {
+    animation: pulseHover 0.3s ease-in-out;
+  }
+  
+  .animate-glow-hover {
+    animation: glowHover 0.5s ease-in-out;
+  }
+}
+
+/* Custom Sidebar Navigation Styles */
+[data-sidebar="sidebar"] {
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] * {
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="menu-button"] {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #FEFEFE !important;
+  transition: all 0.3s ease;
+  border-radius: 0.5rem;
+  margin: 0.25rem 0;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  display: block;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="menu-button"]:hover {
+  background-color: rgba(254, 254, 254, 0.15);
+  transform: translateX(4px);
+  box-shadow: 0 2px 4px rgba(254, 254, 254, 0.1);
+  animation: pulseHover 0.3s ease-in-out;
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="menu-button"]:active {
+  transform: translateX(2px) scale(0.98);
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="menu-button"][data-state="active"] {
+  background-color: rgba(254, 254, 254, 0.2);
+  box-shadow: 0 1px 2px rgba(254, 254, 254, 0.2);
+  border-left: 3px solid #FEFEFE;
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="group-label"] {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #FEFEFE !important;
+  margin: 1rem 0.5rem 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="group-content"] {
+  animation: slideInLeft 0.6s ease-out;
+  width: 100%;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="menu"] {
+  width: 100%;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="menu-item"] {
+  width: 100%;
+}
+
+/* Sidebar header styling */
+[data-sidebar="sidebar"] [data-sidebar="group"]:first-child [data-sidebar="group-label"] {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #FEFEFE !important;
+  margin: 1.5rem 0.5rem 1rem;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer text styling */
+[data-sidebar="sidebar"] [data-sidebar="footer"] {
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="footer"] * {
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="footer"] p {
+  color: #FEFEFE !important;
+}
+
+[data-sidebar="sidebar"] [data-sidebar="footer"] button {
+  color: #FEFEFE !important;
+  border-color: rgba(254, 254, 254, 0.3);
+}
+
+[data-sidebar="sidebar"] [data-sidebar="footer"] button:hover {
+  background-color: rgba(254, 254, 254, 0.1);
+  color: #FEFEFE !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(125, 81, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(125, 81, 255, 0.6);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseHover {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes glowHover {
+  0% {
+    box-shadow: 0 1px 2px rgba(254, 254, 254, 0.2);
+  }
+  50% {
+    box-shadow: 0 2px 4px rgba(254, 254, 254, 0.4);
+  }
+  100% {
+    box-shadow: 0 1px 2px rgba(254, 254, 254, 0.2);
   }
 }
